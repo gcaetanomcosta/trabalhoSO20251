@@ -8,7 +8,7 @@ class TabelaPagProcesso:
     def adicionarEntrada(self, entrada):
         self.lista_entradas.append(entrada)
     
-    def novoProcesso(self, Processo):
+    def novoProcesso(self, processo):
         entrada = EntradaTPP(processo.idProcesso, processo.nPrePaginas())
         adicionarEntrada(entrada)
         print("Processo {processo.idProcesso} adicionado à tabela")
