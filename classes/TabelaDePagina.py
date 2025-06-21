@@ -1,6 +1,6 @@
 class TabelaDePagina:
     def __init__(self):
-        listaEntradasTP = []
+        self.listaEntradasTP = []
 
     def adicionarEntrada(self, entrada):
         self.listaEntradasTP.append(entrada)
