@@ -9,7 +9,10 @@ class Processo:
         return self.idProcesso
     
     def Paginar(self):
-        return list(range(len(self.conteudoInicialResidente)))
+        lista = []
+        for i in range(len(self.conteudoInicialResidente)):
+            lista.append(i)
+        return lista
 
     def nPrePaginas(self):
         return len(self.conteudoInicialResidente)
