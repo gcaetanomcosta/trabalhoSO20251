@@ -1,12 +1,12 @@
-from .transformarEmBits import transformarEmBits
+from .transformarEmBytes import transformarEmBytes
 from .Quadro import Quadro
 from .Pagina import Pagina
 
 class MPUsuario:
 
     def __init__(self, tamMPUsuario, tamPag, politicaSubstituicao):
-        tamMPUsuario = transformarEmBits(tamMPUsuario)
-        tamPag = transformarEmBits(tamPag)
+        tamMPUsuario = transformarEmBytes(tamMPUsuario)
+        tamPag = transformarEmBytes(tamPag)
         self.nQuadros = int(tamMPUsuario/tamPag)
         self.quadrosMP = []
         self.politicaSubstituicao = politicaSubstituicao
@@ -39,11 +39,11 @@ class MPUsuario:
             paginaNova = Pagina(i + nPaginasAlocadas, processo.getIdProcesso(), processo.paginar())
             #Selecionando pagina para ser suspensa
             
-            
-                #verifica se a pagina foi modificada
-                if tabelaPagina.verificarM(nPaginasAlocadas + i):
-                    #atualizar valores na MS
-                    MS.atualizarPagina()
+        
+            #verifica se a pagina foi modificada
+            if tabelaPagina.verificarM(nPaginasAlocadas + i):
+                #atualizar valores na MS
+                MS.atualizarPagina()
 
             
 
