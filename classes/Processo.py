@@ -6,7 +6,7 @@ class Processo:
         else: self.subProcessos = []
 
     def Paginar(self):
-        return list(range(len(self.conteudoInicialResidente)))
+        pass
 
     def nPrePaginas(self):
         return len(self.conteudoInicialResidente)
