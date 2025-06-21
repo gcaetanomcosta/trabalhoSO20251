@@ -5,6 +5,9 @@ class Processo:
         if subProcessos: self.subProcessos = subProcessos 
         else: self.subProcessos = []
 
+    def getIdProcesso(self):
+        return self.idProcesso
+    
     def Paginar(self):
         return list(range(len(self.conteudoInicialResidente)))
 
