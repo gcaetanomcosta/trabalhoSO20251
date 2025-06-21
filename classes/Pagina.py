@@ -5,7 +5,7 @@ class Pagina:
         self.conteudoPag = conteudoPag
 
     def escrever(self, conteudo):
-        pass
+        self.conteudoPag = conteudoPag
 
-    def let(self):
-        pass
+    def ler(self):
+        return self.conteudoPag
