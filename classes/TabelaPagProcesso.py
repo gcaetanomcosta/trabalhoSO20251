@@ -1,0 +1,2 @@
+class TabelaPagProcesso:
+    pass

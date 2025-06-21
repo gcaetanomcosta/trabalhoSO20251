@@ -1,0 +1,2 @@
+class TabelaDePagina:
+    pass
