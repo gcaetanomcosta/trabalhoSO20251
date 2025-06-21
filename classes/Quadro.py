@@ -6,7 +6,7 @@ class Quadro:
         self.conteudoQuadro = conteudoQuadro
 
     def limpar(self):
-        conteudoQuadro = None
+        self.conteudoQuadro = None
 
     def alocarPag(self, Pagina):
         self.conteudoQuadro = Pagina
