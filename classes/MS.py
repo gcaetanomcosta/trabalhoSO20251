@@ -11,7 +11,7 @@ class MS:
         processos = self.processos.values()
         for processo in processos:
             totalOcupado += processo.getTamProcesso()
-        return totalOcupado 
+        return self.tamMS - totalOcupado 
 
 
     def alocarProcesso(self, processo):
