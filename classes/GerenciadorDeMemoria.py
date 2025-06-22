@@ -1,5 +1,10 @@
+import math
 import sys
+from classes.EntradaTPP import EntradaTPP
 from classes.ListaDeInstrucoes import ListaDeInstrucoes
+from classes.TabelaDePagina import TabelaDePagina
+from classes.TabelaPagProcesso import TabelaPagProcesso
+from classes.transformarEmBytes import transformarEmBytes
 from .MPUsuario import MPUsuario
 from .MS import MS
 from .TLB import TLB
@@ -16,7 +21,7 @@ class GerenciadorDeMemoria:
             self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
 
         self.listaTabPag = []
-        self.TabelaPagProcesso = []
+        self.TabelaPagProcesso = TabelaPagProcesso()
         # self.MPUsuario = MPUsuario(self.configuracoesSistema["tamMPUsuario"], self.configuracoesSistema["tamPag"], self.configuracoesSistema["politicaSubstituicao"])
         # self.TLB = TLB(self.configuracoesSistema["nLinhasTLB"])
         # self.MS = MS(self.configuracoesSistema["tamMS"])
@@ -24,9 +29,23 @@ class GerenciadorDeMemoria:
     def mapearEndReal(self, endL):
         pass
 
-    def admissao(self, pagina):
-        pass
+    def admissao(self, pid: str, tamanho_bytes: int):
 
+        tam_pagina = transformarEmBytes(self.configuracoesSistema["tamPag"])
+        #num_paginas é tam_processo / tam_pagina arrendondado para cima 
+        num_paginas = math.ceil(tamanho_bytes / tam_pagina)  # arredondamento para cima
+
+        tabela_de_paginas = TabelaDePagina(num_paginas)
+
+        self.TabelaPagProcesso.adicionarEntrada(EntradaTPP(pid, tabela_de_paginas, num_paginas))
+
+        print(f"\n[{pid}] Processo criado com {tamanho_bytes} bytes ({num_paginas} páginas).")
+        print(f"[{pid}] Tabela de Páginas inicializada:\n")
+
+        for i, entrada in enumerate(tabela_de_paginas.listaEntradasTP):
+            print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+
+        print(f"\n[{pid}] TPP atualizada com sucesso.\n")
     def liberar(self, pagina):
         pass
 
@@ -50,7 +69,7 @@ class GerenciadorDeMemoria:
             case "C":
                 tamanho = instrucao.get_tamanho_em_bytes()
                 print(f"[{pid}] Criar processo com {tamanho} bytes")
-                # TODO: chamar admissao()
+                self.admissao(pid, tamanho)
 
             case "R":
                 endereco = instrucao.get_endereco_logico()
@@ -59,8 +78,7 @@ class GerenciadorDeMemoria:
 
             case "W":
                 endereco = instrucao.get_endereco_logico()
-                valor = instrucao.get_valor()
-                print(f"[{pid}] Escrita no endereço lógico {endereco} com valor {valor}")
+                print(f"[{pid}] Escrita no endereço lógico {endereco}")
                 # TODO: mapearEndReal(), setar bit de modificação
 
             case "P":

@@ -1,4 +1,4 @@
-from EntradaTLB import EntradaTLB
+from .EntradaTLB import EntradaTLB
   
 class TLB:
   def __init__(self, n_linhas):

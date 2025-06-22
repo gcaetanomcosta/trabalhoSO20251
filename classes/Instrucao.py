@@ -30,7 +30,7 @@ class Instrucao:
     def get_endereco_logico(self) -> int | None:
         """Retorna o endereço lógico como inteiro se aplicável."""
         if self.tipo in {"R", "W", "P"}:
-            return int(self.args[0].replace("(", "").replace(")", "").replace("10", ""))
+            return int(self.args[0].replace("(", "").replace(")10", ""))
         return None
 
     def get_tamanho_em_bytes(self) -> int | None:

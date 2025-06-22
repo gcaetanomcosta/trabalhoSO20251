@@ -1,16 +1,16 @@
-from EntradaTPP import EntradaTPP
-from Processo import Processo
+from .EntradaTPP import EntradaTPP
+from .Processo import Processo
 
 class TabelaPagProcesso:
     def __init__(self):
         self.lista_entradas = []
 
-    def adicionarEntrada(self, entrada):
+    def adicionarEntrada(self, entrada : EntradaTPP):
         self.lista_entradas.append(entrada)
     
     def novoProcesso(self, processo):
         entrada = EntradaTPP(processo.idProcesso, processo.nPrePaginas())
-        adicionarEntrada(entrada)
+        self.adicionarEntrada(entrada)
         print("Processo {processo.idProcesso} adicionado à tabela")
 
     def excluirProcesso(self, idProcesso):
