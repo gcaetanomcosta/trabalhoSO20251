@@ -10,4 +10,4 @@ def transformarEmBytes(memoria):
     elif "B" in memoria:
         return int(memoria.split('B')[0])
     else:
-        print("Unidade de memória inserida não suportada. Unidades aceitas: bits, B, KB, MB, GB, TB")
+        print("Unidade de memória inserida não suportada. Unidades aceitas: B, KB, MB, GB, TB")

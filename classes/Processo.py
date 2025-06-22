@@ -1,18 +1,22 @@
+from .transformarEmBytes import transformarEmBytes
+import math
+
 class Processo:
-    def __init__(self, idProcesso, conteudoInicialResidente, subProcessos = None):
+    
+    def __init__(self, idProcesso, tamProcesso, tamPag):
         self.idProcesso = idProcesso
-        self.conteudoInicialResidente = conteudoInicialResidente
-        if subProcessos: self.subProcessos = subProcessos 
-        else: self.subProcessos = []
+        tamProcesso = transformarEmBytes(tamProcesso)
+        self.conteudo = [0]*math.ceil(tamProcesso/tamPag)
+        self.tamProcesso = len(self.conteudo)*tamPag
 
     def getIdProcesso(self):
         return self.idProcesso
     
-    def Paginar(self):
-        lista = []
-        for i in range(len(self.conteudoInicialResidente)):
-            lista.append(i)
-        return lista
-
-    def nPrePaginas(self):
-        return len(self.conteudoInicialResidente)
+    def getConteudo(self):
+        return self.conteudo
+    
+    def getNPaginas(self):
+        return len(self.conteudo)
+    
+    def getTamProcesso(self):
+        return self.tamProcesso

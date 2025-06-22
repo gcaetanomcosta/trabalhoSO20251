@@ -1,35 +1,29 @@
-from classes.Pagina import Pagina
+import math
+from .transformarEmBytes import transformarEmBytes
 
 class MS:
-    def __init__(self):
+    def __init__(self, tamMS):
         self.processos = {}
+        self.tamMS = transformarEmBytes(tamMS)
+
+    def calcularDisponibilidade(self):
+        totalOcupado = 0
+        processos = self.processos.values()
+        for processo in processos:
+            totalOcupado += processo.getTamProcesso()
+        return totalOcupado 
+
 
     def alocarProcesso(self, processo):
-        self.processos[processo.idProcesso] = processo
-
-    def acessarPagina(self, IdProcesso, IdPagina):
-        processo = self.processos.get(IdProcesso)
-        if not processo:
-            return None
-        try:
-            pagina_dados = processo.conteudoInicialResidente[IdPagina]
-            pagina = Pagina(IdProcesso, IdPagina)
-            pagina.conteudoPag = pagina_dados['conteudoPag']  # desserializa
-            return pagina
-        except IndexError:
-            return None
-        
-    def atualizarPagina(self, pagina):
-        processo = self.processos.get(pagina.idProcesso)
-        if not processo:
-            return
-
-        if pagina.idPagina < len(processo.conteudoInicialResidente):
-            processo.conteudoInicialResidente[pagina.idPagina] = self.serializarPagina(pagina)
+        if processo.getTamProcesso() <= self.calcularDisponibilidade():
+            self.processos[processo.idProcesso] = processo
         else:
-            processo.conteudoInicialResidente.append(self.serializarPagina(pagina))
-
-    def serializarPagina(self, pagina):
-        return {
-            'conteudoPag': pagina.conteudoPag
-        }
+            raise print("Não há memória na memória secundária disponível para alocar o processo")
+    
+    def obterPaginaProcesso(self, idProcesso, idPagina, tamCR):
+        processo = self.processos[idProcesso]
+        nConjuntosR = math.ceil(processo.getNPaginas()/tamCR)
+        conjuntoResidenteNovo = tamCR//idPagina
+        conteudo = processo.getConteudo()[conjuntoResidenteNovo*tamCR:(conjuntoResidenteNovo*tamCR+tamCR)]
+        return conteudo
+    
