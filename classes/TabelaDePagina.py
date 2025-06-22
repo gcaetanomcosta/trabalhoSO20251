@@ -1,36 +1,33 @@
-from pyparsing import List
 from .EntradaTP import EntradaTP
 
-
-##Retirar bit U daqui??????
 class TabelaDePagina:
-    def __init__(self, n_paginas: int):
-        self.listaEntradasTP: List[EntradaTP] = [
-            EntradaTP(bitP=0, bitM=0,
-                    #    bitU=0, 
-                       endQuadroMP=None)
-            for _ in range(n_paginas)
-        ]
-
-
-    def adicionarEntrada(self, entrada: EntradaTP):
-        self.listaEntradasTP.append(entrada)
+    def __init__(self, n_paginas):
+        self.listaEntradasTP = {}
+        for i in range(n_paginas):
+            self.listaEntradasTP[i] = EntradaTP(bitP=0, bitM=0, bitU=0, endQuadroMP=None)
     
-    def ataulizarEnd(self, idPagina, end, bitP, bitM):
-        if 0 <= idPagina < len(self.listaEntradasTP):
-            entrada = self.listaEntradasTP[idPagina]
-            entrada.endQuadroMP = end
-            entrada.bitP = bitP
-            entrada.bitM = bitM
-        else:
-            print(f"Página {idPagina} fora do intervalo.")
+    def atualizarEntrada(self, idPagina, end, bitP, bitM, bitU):
+        entrada = self.listaEntradasTP[idPagina]
+        entrada.endQuadroMP = end
+        entrada.bitP = bitP
+        entrada.bitM = bitM
+        entrada.bitU = bitU
 
     def verificarM(self, idPagina):
-        return self.listaEntradasTP[idPagina].bitM
+        return self.listaEntradasTP[idPagina].getBitM()
     
-    def get_entrada(self, idPagina: int) -> EntradaTP:
-        return self.listaEntradasTP[idPagina]
+    def verificarU(self, idPagina):
+        return self.listaEntradasTP[idPagina].getBitU()
+    
+    def verificarP(self, idPagina):
+        return self.listaEntradasTP[idPagina].getBitP()
 
-    def set_bitU(self, idPagina: int, valor: int):
+    def setBitU(self, idPagina, valor):
         self.listaEntradasTP[idPagina].bitU = valor
+    
+    def setBitP(self, idPagina, valor):
+        self.listaEntradasTP[idPagina].bitP = valor
+
+    def setBitM(self, idPagina, valor):
+        self.listaEntradasTP[idPagina].bitM = valor
         

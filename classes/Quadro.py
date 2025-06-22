@@ -12,5 +12,11 @@ class Quadro:
         self.conteudoQuadro = Pagina
 
     def verificarDisponivel(self):
-        if self.conteudoQuadro == None: return 1
-        else: return 0
+        if self.conteudoQuadro == None: return True
+        else: return False
+
+    def getConteudoQuadro(self):
+        return self.conteudoQuadro
+    
+    def getEnd(self):
+        return self.end

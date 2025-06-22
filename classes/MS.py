@@ -1,4 +1,5 @@
 import math
+from .Pagina import Pagina
 from .transformarEmBytes import transformarEmBytes
 
 class MS:
@@ -18,12 +19,10 @@ class MS:
         if processo.getTamProcesso() <= self.calcularDisponibilidade():
             self.processos[processo.idProcesso] = processo
         else:
-            raise print("Não há memória na memória secundária disponível para alocar o processo")
+            raise print("Não há espaço na memória secundária disponível para alocar o processo")
     
-    def obterPaginaProcesso(self, idProcesso, idPagina, tamCR):
+    def obterPaginaProcesso(self, idProcesso, idPagina):
         processo = self.processos[idProcesso]
-        nConjuntosR = math.ceil(processo.getNPaginas()/tamCR)
-        conjuntoResidenteNovo = tamCR//idPagina
-        conteudo = processo.getConteudo()[conjuntoResidenteNovo*tamCR:(conjuntoResidenteNovo*tamCR+tamCR)]
-        return conteudo
+        conteudo = processo.getConteudo()[idPagina]
+        return Pagina(idProcesso, idPagina, conteudo)
     
