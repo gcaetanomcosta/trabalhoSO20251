@@ -28,7 +28,7 @@ class GerenciadorDeMemoria:
         self.filaBloqueado = []
         self.filaPronto = []
         self.MPUsuario = MPUsuario(self.configuracoesSistema["tamMPUsuario"], self.configuracoesSistema["tamPag"], self.configuracoesSistema["politicaSubstituicao"])
-        # self.TLB = TLB(self.configuracoesSistema["nLinhasTLB"])
+        self.TLB = TLB(self.configuracoesSistema["nLinhasTLB"])
         self.MS = MS(self.configuracoesSistema["tamMS"])
 
     def mapearEndReal(self, pid, endL):
@@ -90,6 +90,10 @@ class GerenciadorDeMemoria:
         #desalocando cada pagina do processo
         for end in enderecosComPagDoProcesso:
             self.MPUsuario.desalocarPagina(end, self.tabelasPaginas)
+        #limpando TLB
+        if self.processoExecutando == pid:
+            self.TLB.reiniciarTLB()
+            print(f"TLB reiniciada")
         #Removendo das tabelas
         self.tabelasPaginas.pop(pid)
         print(f"Tabela de paginas do processo {pid} removida")
@@ -102,7 +106,10 @@ class GerenciadorDeMemoria:
         if pid in self.filaPronto:
             self.filaPronto.remove(pid)
             print(f"Processo {pid} removido da fila dos prontos")
+        
+        
         print(f"Liberação do processo {pid} finalizada com sucesso")
+        
 
     def bloquear(self, pid):
         if "suspenso" in self.tabelasPaginas[pid].getEstadoProcesso(): 
@@ -122,6 +129,7 @@ class GerenciadorDeMemoria:
         if self.processoExecutando != pid:
             self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.TLB.reiniciarTLB()
 
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
@@ -129,6 +137,10 @@ class GerenciadorDeMemoria:
             #fazer logica do bit u aqui.
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Conteudo do endereço lógico {endLogico} do processo {pid} no endereço real {endReal} lido com sucesso!")
+            #verificar se página está na TLB
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                #adicionando página na TLB
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid][endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
             tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
@@ -142,6 +154,10 @@ class GerenciadorDeMemoria:
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
                 elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
+
+            #atualizando TLB se a pagina removida estiver na TLB
+            if paginaRemovida[0] == self.processoExecutando:
+                self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
             #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
             self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
@@ -157,6 +173,7 @@ class GerenciadorDeMemoria:
         if self.processoExecutando != pid:
             self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.TLB.reiniciarTLB()
 
         #pagina está na memória
         tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
@@ -166,6 +183,10 @@ class GerenciadorDeMemoria:
             self.MPUsuario.adicionarUQR(endReal)
             self.tabelasPaginas[pid].setBitM(endLogico//tamPag, 1)
             print(f"Operação de escrita no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} finalizado com sucesso!")
+            #verificar se página está na TLB
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                #adicionando página na TLB
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid][endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
             print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
@@ -178,6 +199,9 @@ class GerenciadorDeMemoria:
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
                 elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
+            #atualizando TLB se a pagina removida estiver na TLB
+            if paginaRemovida[0] == self.processoExecutando:
+                self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
             #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
             self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
@@ -192,6 +216,7 @@ class GerenciadorDeMemoria:
         if self.processoExecutando != pid:
             self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.TLB.reiniciarTLB()
 
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
@@ -199,6 +224,10 @@ class GerenciadorDeMemoria:
             #fazer logica do bit u aqui.
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Instrução localizada no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} realizada com sucesso!")
+            #verificar se página está na TLB
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                #adicionando página na TLB
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid][endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
             tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
@@ -208,6 +237,10 @@ class GerenciadorDeMemoria:
             #pagina removida é [idProcesso, idPagina]
             if paginaRemovida != []:
                 self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
+
+            #atualizando TLB se a pagina removida estiver na TLB
+            if paginaRemovida[0] == self.processoExecutando:
+                self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
             #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
             self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)

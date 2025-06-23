@@ -2,7 +2,7 @@ from .EntradaTLB import EntradaTLB
   
 class TLB:
     def __init__(self, n_linhas):
-        self.n_linhas = n_linhas
+        self.n_linhas = int(n_linhas)
         self.linhasOcupadas = 0
         #para realocar linhas da propria TLB
         self.cabecote = 0
@@ -15,6 +15,7 @@ class TLB:
         self.cabecote = 0
         for i in range(self.n_linhas):
            self.linhas[i].setValidade(0)
+        print("TLB reiniciada com sucesso!")
 
     def adicionarPagTLB(self, validade, idPagina, bitP, bitM, endQuadroMP):
         if self.linhasOcupadas < self.n_linhas:
@@ -28,9 +29,16 @@ class TLB:
             self.cabecote += 1
             if self.cabecote >= self.n_linhas:
                 self.cabecote = 0
+        print(f"Página {idPagina} adicionada à TLB")
 
     def atualizarPagTLB(self, validade, idPagina, bitP, bitM, endQuadroMP):
         for i in range(len(self.n_linhas)):
             if self.linhas[i].getIdPagina() == idPagina:
                 self.linhas[i] = EntradaTLB(validade, idPagina, bitP, bitM, endQuadroMP)
         raise print(f"Página {idPagina} não está na TLB, logo não pode ser atualizada")
+
+    def verificarPresencaPag(self, idPagina):
+        for i in range(self.n_linhas):
+            if self.linhas[i].getIdPagina() == idPagina:
+                return True
+        return False
