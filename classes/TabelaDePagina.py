@@ -3,6 +3,7 @@ from .EntradaTP import EntradaTP
 class TabelaDePagina:
     def __init__(self, n_paginas):
         self.listaEntradasTP = {}
+        self.estadoProcesso = "pronto"
         for i in range(n_paginas):
             self.listaEntradasTP[i] = EntradaTP(bitP=0, bitM=0, bitU=0, endQuadroMP=None)
     
@@ -30,4 +31,18 @@ class TabelaDePagina:
 
     def setBitM(self, idPagina, valor):
         self.listaEntradasTP[idPagina].bitM = valor
+
+    def setEstadoProcesso(self, valor):
+        self.estadoProcesso = valor
         
+    def getListaEntradasTP(self):
+        return self.listaEntradasTP
+    
+    def bloquearProcesso(self):
+        for i in range(len(list(self.listaEntradasTP.values()))):
+            self.listaEntradasTP[i].bitU = 0
+            self.listaEntradasTP[i].bitP = 0
+            self.listaEntradasTP[i].bitM = 0
+            self.listaEntradasTP[i].endQuadroMP = None
+        self.estadoProcesso = "bloqueado"
+

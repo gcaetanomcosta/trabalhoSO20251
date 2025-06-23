@@ -1,22 +1,36 @@
 from .EntradaTLB import EntradaTLB
   
 class TLB:
-  def __init__(self, n_linhas):
-    self.n_linhas = n_linhas
-    self.linhas = []
+    def __init__(self, n_linhas):
+        self.n_linhas = n_linhas
+        self.linhasOcupadas = 0
+        #para realocar linhas da propria TLB
+        self.cabecote = 0
+        self.linhas = []
+        for i in range(n_linhas):
+           self.linhas.append(EntradaTLB(0, 0, 0, 0, 0))
 
-  def acessarTLB(self, idPagina):
-    for i, entrada in enumerate(self.linhas):
-      if entrada.idPagina == idPagina and entrada.validade == 1:
-        self.linhas.append(self.linhas.pop(i))
-        return entrada.endQuadroMP
-    return -1
+    def reiniciarTLB(self):
+        self.linhasOcupadas = 0
+        self.cabecote = 0
+        for i in range(self.n_linhas):
+           self.linhas[i].setValidade(0)
 
-  def atualizarTLB(self, novaEntrada):
-    for i, entrada in enumerate(self.linhas):
-      if entrada.idPagina == novaEntrada.idPagina:
-        self.linhas.pop(i)
-        break
-    if len(self.linhas) >= self.n_linhas:
-      self.linhas.pop(0)
-    self.linhas.append(novaEntrada)
+    def adicionarPagTLB(self, validade, idPagina, bitP, bitM, endQuadroMP):
+        if self.linhasOcupadas < self.n_linhas:
+            self.linhas[self.cabecote] = EntradaTLB(validade, idPagina, bitP, bitM, endQuadroMP)
+            self.linhasOcupadas += 1
+            self.cabecote += 1
+            if self.cabecote >= self.n_linhas:
+                self.cabecote = 0
+        else:
+            self.linhas[self.cabecote] = EntradaTLB(validade, idPagina, bitP, bitM, endQuadroMP)
+            self.cabecote += 1
+            if self.cabecote >= self.n_linhas:
+                self.cabecote = 0
+
+    def atualizarPagTLB(self, validade, idPagina, bitP, bitM, endQuadroMP):
+        for i in range(len(self.n_linhas)):
+            if self.linhas[i].getIdPagina() == idPagina:
+                self.linhas[i] = EntradaTLB(validade, idPagina, bitP, bitM, endQuadroMP)
+        raise print(f"Página {idPagina} não está na TLB, logo não pode ser atualizada")

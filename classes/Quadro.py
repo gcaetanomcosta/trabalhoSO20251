@@ -8,7 +8,7 @@ class Quadro:
     def limpar(self):
         self.conteudoQuadro = None
 
-    def alocarPag(self, Pagina):
+    def alocarPagina(self, Pagina):
         self.conteudoQuadro = Pagina
 
     def verificarDisponivel(self):

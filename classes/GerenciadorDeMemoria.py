@@ -23,13 +23,22 @@ class GerenciadorDeMemoria:
             self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
 
         self.tabelasPaginas = {}
+        self.processoExecutando = None
         self.TabelaPagProcesso = TabelaPagProcesso()
+        self.filaBloqueado = []
+        self.filaPronto = []
         self.MPUsuario = MPUsuario(self.configuracoesSistema["tamMPUsuario"], self.configuracoesSistema["tamPag"], self.configuracoesSistema["politicaSubstituicao"])
         # self.TLB = TLB(self.configuracoesSistema["nLinhasTLB"])
         self.MS = MS(self.configuracoesSistema["tamMS"])
 
-    def mapearEndReal(self, endL):
-        pass
+    def mapearEndReal(self, pid, endL):
+        tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
+        tamEndL = self.configuracoesSistema["tamEndL"]
+        if endL > int(self.configuracoesSistema["tamEndL"].split()[0]):
+            raise print("Endereço lógico inserido é maior que o permitido no sistema")
+        else:
+            return self.tabelasPaginas(pid)[endL//tamPag].getEndQuadroMP()
+        
 
     def admissao(self, pid: str, tamanho_bytes: int):
 
@@ -53,33 +62,160 @@ class GerenciadorDeMemoria:
         #pagina removida é [idProcesso, idPagina]
         if paginaRemovida != []:
             self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
-
+            if self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "pronto":
+                self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
+            elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
+                self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
+            
         #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
         self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
 
         for i, entrada in enumerate(tabela_de_paginas.listaEntradasTP):
             print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
 
+        #Adicionando na fila de pronto
+        self.filaPronto.append(pid)
+        print(f"Processo {pid} adicionado na fila dos prontos")
+
+
         print(f"\n[{pid}] TPP atualizada com sucesso.\n")
+        print(f"Admissão do processo {pid} finalizada com sucesso")
+
+    def liberar(self, pid):
+        enderecosComPagDoProcesso = []
+        tabelaPaginaProcessoSaindo = self.tabelasPaginas[pid]
+        #obtendo lista de endereços dos quadros que possuem paginas do processo a ser desalocado
+        for entrada in list(tabelaPaginaProcessoSaindo.getListaEntradasTP().values()):
+            enderecosComPagDoProcesso.append(entrada.getEndQuadroMP())
+        #desalocando cada pagina do processo
+        for end in enderecosComPagDoProcesso:
+            self.MPUsuario.desalocarPagina(end, self.tabelasPaginas)
+        #Removendo das tabelas
+        self.tabelasPaginas.pop(pid)
+        print(f"Tabela de paginas do processo {pid} removida")
+        self.TabelaPagProcesso.pop(pid)
+        print(f"Processo {pid} removido da tabela de paginas por processo")
+        #Removendo das filas
+        if pid in self.filaBloqueado:
+            self.filaBloqueado.remove(pid)
+            print(f"Processo {pid} removido da fila dos bloqueados")
+        if pid in self.filaPronto:
+            self.filaPronto.remove(pid)
+            print(f"Processo {pid} removido da fila dos prontos")
+        print(f"Liberação do processo {pid} finalizada com sucesso")
+
+    def bloquear(self, pid):
+        if "suspenso" in self.tabelasPaginas[pid].getEstadoProcesso(): 
+            self.tabelasPaginas[pid].setEstadoProcesso("bloqueado suspenso")
+        else:
+            self.tabelasPaginas[pid].setEstadoProcesso("bloqueado")
+        if pid in self.filaPronto:
+            self.filaPronto.remove(pid)
+            print(f"Processo {pid} removido da fila dos prontos")
+        if pid not in self.filaBloqueado:
+            self.filaBloqueado.append(pid)
+            print(f"Processo {pid} adicionado na fila dos bloqueados")
+        print(f"Bloqueio do processo {pid} finalizado com sucesso")
+
+    def ler(self, pid, endLogico):
+        #atualizando estado executando e pronto
+        if self.processoExecutando != pid:
+            self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+            self.tabelasPaginas[pid].setEstadoProcesso("executando")
+
+        #pagina está na memória
+        endReal = self.mapearEndReal(pid, endLogico) 
+        if endReal != None:
+            #fazer logica do bit u aqui.
+            self.MPUsuario.adicionarUQR(endReal)
+            print(f"Conteudo do endereço lógico {endLogico} do processo {pid} no endereço real {endReal} lido com sucesso!")
+        #pagina não está na memória
+        else:
+            tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
+            print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
+            # Se alguma pagina foi removida da MP para adicionar essa, precisa atualizar na respectiva tabela de pagina    
+            paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, endLogico//tamPag), self.tabelasPaginas)
+            #pagina removida é [idProcesso, idPagina]
+            if paginaRemovida != []:
+                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
+                if self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "pronto":
+                    self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
+                elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
+                    self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
+
+            #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
+            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
+
+            for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
+                print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+            print(f"Tabela de paginas do processo {pid} atualizada")
+            self.ler(pid, endLogico)
 
 
+    def escrever(self, pid, endLogico):
+        #atualizando estado executando e pronto
+        if self.processoExecutando != pid:
+            self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+            self.tabelasPaginas[pid].setEstadoProcesso("executando")
 
+        #pagina está na memória
+        tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
+        endReal = self.mapearEndReal(pid, endLogico) 
+        if endReal != None:
+            #fazer logica do bit u aqui.
+            self.MPUsuario.adicionarUQR(endReal)
+            self.tabelasPaginas[pid].setBitM(endLogico//tamPag, 1)
+            print(f"Operação de escrita no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} finalizado com sucesso!")
+        #pagina não está na memória
+        else:
+            print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
+            # Se alguma pagina foi removida da MP para adicionar essa, precisa atualizar na respectiva tabela de pagina    
+            paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, endLogico//tamPag), self.tabelasPaginas)
+            #pagina removida é [idProcesso, idPagina]
+            if paginaRemovida != []:
+                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
+                if self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "pronto":
+                    self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
+                elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
+                    self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
 
+            #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
+            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
 
-    def liberar(self, pagina):
-        pass
+            for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
+                print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+            print(f"Tabela de paginas do processo {pid} atualizada")
+            self.escrever(pid, endLogico)
 
-    def despachar(self, pagina):
-        pass
+    def instrucaoCPU(self, pid, endLogico):
+        #atualizando estado executando e pronto
+        if self.processoExecutando != pid:
+            self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+            self.tabelasPaginas[pid].setEstadoProcesso("executando")
 
-    def pausar(self, pagina):
-        pass
+        #pagina está na memória
+        endReal = self.mapearEndReal(pid, endLogico) 
+        if endReal != None:
+            #fazer logica do bit u aqui.
+            self.MPUsuario.adicionarUQR(endReal)
+            print(f"Instrução localizada no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} realizada com sucesso!")
+        #pagina não está na memória
+        else:
+            tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
+            print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
+            # Se alguma pagina foi removida da MP para adicionar essa, precisa atualizar na respectiva tabela de pagina    
+            paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, endLogico//tamPag), self.tabelasPaginas)
+            #pagina removida é [idProcesso, idPagina]
+            if paginaRemovida != []:
+                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
 
-    def desbloquear(self, pagina):
-        pass
+            #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
+            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
 
-    def suspender(self, pagina):
-        pass
+            for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
+                print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+            print(f"Tabela de paginas do processo {pid} atualizada")
+            self.instrucaoCPU(pid, endLogico)
 
     def realizarInstrucao(self, instrucao):
         tipo = instrucao.tipo
@@ -94,26 +230,26 @@ class GerenciadorDeMemoria:
             case "R":
                 endereco = instrucao.get_endereco_logico()
                 print(f"[{pid}] Leitura no endereço lógico {endereco}")
-                # TODO: mapearEndReal(), consultar TLB, tratar falta de página
+                self.ler(pid, endereco)
 
             case "W":
                 endereco = instrucao.get_endereco_logico()
                 print(f"[{pid}] Escrita no endereço lógico {endereco}")
-                # TODO: mapearEndReal(), setar bit de modificação
+                self.escrever(pid, endereco)
 
             case "P":
                 endereco = instrucao.get_endereco_logico()
                 print(f"[{pid}] Executar instrução no endereço lógico {endereco}")
-                # TODO: simular fetch da instrução (como um R)
+                self.instrucaoCPU(pid, endereco)
 
             case "I":
                 dispositivo = instrucao.args[0]
                 print(f"[{pid}] Requisição de I/O no dispositivo '{dispositivo}'")
-                # TODO: pausar o processo, simular operação de I/O
+                self.bloquear(pid)
 
             case "T":
                 print(f"[{pid}] Terminar processo")
-                # TODO: liberar recursos, remover páginas
+                self.liberar(pid)
 
             case _:
                 print(f"[{pid}] Instrução desconhecida: {instrucao}")

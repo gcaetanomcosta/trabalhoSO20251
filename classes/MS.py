@@ -9,7 +9,7 @@ class MS:
 
     def calcularDisponibilidade(self):
         totalOcupado = 0
-        processos = self.processos.values()
+        processos = list(self.processos.values())
         for processo in processos:
             totalOcupado += processo.getTamProcesso()
         return self.tamMS - totalOcupado 
@@ -22,7 +22,10 @@ class MS:
             raise print("Não há espaço na memória secundária disponível para alocar o processo")
     
     def obterPaginaProcesso(self, idProcesso, idPagina):
-        processo = self.processos[idProcesso]
-        conteudo = processo.getConteudo()[idPagina]
-        return Pagina(idProcesso, idPagina, conteudo)
+        if idPagina>len(list(self.processos.values()))-1:
+            raise print(f"Processo {idProcesso} não possui a página {idPagina} referenciada pelo endereço lógico")
+        else:
+            processo = self.processos[idProcesso]
+            conteudo = processo.getConteudo()[idPagina]
+            return Pagina(idProcesso, idPagina, conteudo)
     

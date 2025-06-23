@@ -1,5 +1,4 @@
-
-from classes.transformarEmBytes import transformarEmBytes
+from .transformarEmBytes import transformarEmBytes
 
 
 class Instrucao:

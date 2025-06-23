@@ -14,3 +14,6 @@ class EntradaTP:
     
     def getBitU(self):
         return self.bitU
+    
+    def getEndQuadroMP(self):
+        return self.endQuadroMP
