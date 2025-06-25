@@ -21,6 +21,9 @@ class GerenciadorDeMemoria:
             self.configuracoesSistema = {"tamMPUsuario": argv[1], "tamPag": argv[2], "tamEndL": argv[3], "nLinhasTLB": argv[4], "tamMS": argv[5], "politicaSubstituicao": argv[6]}
         else:
             self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
+            #self.configuracoesSistema = {"tamMPUsuario": "48MB","tamPag": "16MB","tamEndL": "32bits","nLinhasTLB": "4","tamMS": "256GB","politicaSubstituicao": "Relógio"}
+            #self.configuracoesSistema = {"tamMPUsuario": "128MB","tamPag": "4MB","tamEndL": "32bits","nLinhasTLB": "4","tamMS": "256GB","politicaSubstituicao": "Relógio"}
+        
 
         self.tabelasPaginas = {}
         self.processoExecutando = None

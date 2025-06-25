@@ -16,13 +16,22 @@ class MPUsuario:
         #para fazer substituição por LRU, será usada como uma fila
         self.ultimosQuadrosReferenciados = []
 
+        # for i in range(self.nQuadros):
+        #     self.quadrosMP[i*tamPag] = Quadro(i*tamPag, None)
+
+        self.ponteiro_relogio = 0
+        self.bit_uso = {}
+
         for i in range(self.nQuadros):
-            self.quadrosMP[i*tamPag] = Quadro(i*tamPag, None)
+            endereco = i * tamPag
+            self.quadrosMP[endereco] = Quadro(endereco, None)
+            self.bit_uso[endereco] = 0
     
     def adicionarUQR(self, end):
         if end in self.ultimosQuadrosReferenciados:
             self.ultimosQuadrosReferenciados.remove(end)
         self.ultimosQuadrosReferenciados.append(end)
+        self.bit_uso[end] = 1  # Marca o bit de uso
 
     def removerUQR(self, end):
         self.ultimosQuadrosReferenciados.remove(end)
@@ -52,19 +61,42 @@ class MPUsuario:
             #retornando também o endereço do quadro alocado para atualizar na tabela de paginas no gerenciador de memoria
             return [quadroLRU.getConteudoQuadro().getIdProcesso(), quadroLRU.getConteudoQuadro().getIdPagina()], quadroLRU.getEnd()
 
-    def swapOutRelogio(self, processo, tabelaPagina, nPaginasAlocadas, MS):
-        """for i in range(processo.nPrePaginas()):    
-            paginaNova = Pagina(i + nPaginasAlocadas, processo.getIdProcesso(), processo.paginar())
-            #Selecionando pagina para ser suspensa
+    # def swapOutRelogio(self, processo, tabelaPagina, nPaginasAlocadas, MS):
+    #     """for i in range(processo.nPrePaginas()):    
+    #         paginaNova = Pagina(i + nPaginasAlocadas, processo.getIdProcesso(), processo.paginar())
+    #         #Selecionando pagina para ser suspensa
             
         
-            #verifica se a pagina foi modificada
-            if tabelaPagina.verificarM(nPaginasAlocadas + i):
-                #atualizar valores na MS
-                MS.atualizarPagina()"""
-        pass
+    #         #verifica se a pagina foi modificada
+    #         if tabelaPagina.verificarM(nPaginasAlocadas + i):
+    #             #atualizar valores na MS
+    #             MS.atualizarPagina()"""
+    #     pass
 
+    def swapOutRelogio(self, paginaNova, tabelasPaginas):
+        while True:
+            end_atual = list(self.quadrosMP.keys())[self.ponteiro_relogio]
+            quadro = self.quadrosMP[end_atual]
             
+            if self.bit_uso[end_atual] == 0:
+
+                pagina_substituida = quadro.getConteudoQuadro()
+                pid = pagina_substituida.getIdProcesso()
+                id_pag = pagina_substituida.getIdPagina()
+
+                if tabelasPaginas[pid].verificarM(id_pag):
+                    print(f"Pagina {id_pag} do processo {pid} foi modificada. Salvando na MS.")
+                    # self.MS.atualizarPagina(pagina_substituida)
+                
+                quadro.alocarPagina(paginaNova)
+                self.bit_uso[end_atual] = 1
+                self.ponteiro_relogio = (self.ponteiro_relogio + 1) % self.nQuadros
+
+                return [pid, id_pag], end_atual
+            else:
+                self.bit_uso[end_atual] = 0
+                self.ponteiro_relogio = (self.ponteiro_relogio + 1) % self.nQuadros
+                
 
     def alocarPagina(self, pagina, tabelasPaginas):
         #Verificando disponibilidade de memória
@@ -86,7 +118,7 @@ class MPUsuario:
 
         #Relogio
         elif self.politicaSubstituicao == "Relógio":
-            self.swapOutRelogio(pagina, tabelasPaginas)
+            return self.swapOutRelogio(pagina, tabelasPaginas)
 
 
     def desalocarPagina(self, end, tabelasPaginas):
