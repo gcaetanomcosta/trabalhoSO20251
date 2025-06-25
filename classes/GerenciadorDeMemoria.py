@@ -135,9 +135,12 @@ class GerenciadorDeMemoria:
         print(f"Bloqueio do processo {pid} finalizado com sucesso")
 
     def ler(self, pid, endLogico):
+        tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
-            self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+            if self.processoExecutando is not None:
+                # Se o processo que estava executando não é o pid, ele volta para pronto
+                self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
             self.TLB.reiniciarTLB()
 
@@ -181,7 +184,9 @@ class GerenciadorDeMemoria:
     def escrever(self, pid, endLogico):
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
-            self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+            if self.processoExecutando is not None:
+                # Se o processo que estava executando não é o pid, ele volta para pronto
+                self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
             self.TLB.reiniciarTLB()
 
@@ -225,7 +230,8 @@ class GerenciadorDeMemoria:
         tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
-            self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+            if self.processoExecutando is not None:
+                self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
             self.TLB.reiniciarTLB()
     

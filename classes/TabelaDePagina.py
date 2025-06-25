@@ -38,6 +38,9 @@ class TabelaDePagina:
     def getListaEntradasTP(self):
         return self.listaEntradasTP
     
+    def getEstadoProcesso(self):
+        return self.estadoProcesso
+    
     def bloquearProcesso(self):
         for i in range(len(list(self.listaEntradasTP.values()))):
             self.listaEntradasTP[i].bitU = 0
