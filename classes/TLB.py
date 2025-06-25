@@ -7,7 +7,7 @@ class TLB:
         #para realocar linhas da propria TLB
         self.cabecote = 0
         self.linhas = []
-        for i in range(n_linhas):
+        for i in range(self.n_linhas):
            self.linhas.append(EntradaTLB(0, 0, 0, 0, 0))
 
     def reiniciarTLB(self):
@@ -32,7 +32,7 @@ class TLB:
         print(f"Página {idPagina} adicionada à TLB")
 
     def atualizarPagTLB(self, validade, idPagina, bitP, bitM, endQuadroMP):
-        for i in range(len(self.n_linhas)):
+        for i in range(self.n_linhas): 
             if self.linhas[i].getIdPagina() == idPagina:
                 self.linhas[i] = EntradaTLB(validade, idPagina, bitP, bitM, endQuadroMP)
         raise print(f"Página {idPagina} não está na TLB, logo não pode ser atualizada")

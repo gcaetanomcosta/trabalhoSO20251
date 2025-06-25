@@ -75,7 +75,8 @@ class MPUsuario:
                 #i serve como id da pagina, essencialmente é o número do quadro aqui.
                 self.quadrosMP[i*self.tamPag].alocarPagina(pagina)
                 #atualizando ultimosQuadrosReferenciados
-                self.adicionarUltimosQuadrosReferenciados(i)
+                # self.adicionarUltimosQuadrosReferenciados(i)
+                self.adicionarUQR(i)
                 return [], i*self.tamPag
 
         #caso não hajam quadros disponiveis:

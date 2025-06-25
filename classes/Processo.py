@@ -5,7 +5,7 @@ class Processo:
     
     def __init__(self, idProcesso, tamProcesso, tamPag):
         self.idProcesso = idProcesso
-        tamProcesso = transformarEmBytes(tamProcesso)
+        tamProcesso = tamProcesso
         self.conteudo = [0]*math.ceil(tamProcesso/tamPag)
         self.tamProcesso = len(self.conteudo)*tamPag
 

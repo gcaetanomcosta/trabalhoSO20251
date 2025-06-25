@@ -33,11 +33,20 @@ class GerenciadorDeMemoria:
 
     def mapearEndReal(self, pid, endL):
         tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
-        tamEndL = self.configuracoesSistema["tamEndL"]
-        if endL > int(self.configuracoesSistema["tamEndL"].split()[0]):
-            raise print("Endereço lógico inserido é maior que o permitido no sistema")
-        else:
-            return self.tabelasPaginas(pid)[endL//tamPag].getEndQuadroMP()
+        # tamEndL = self.configuracoesSistema["tamEndL"]
+        # if endL > int(self.configuracoesSistema["tamEndL"].split()[0]):
+        #     raise print("Endereço lógico inserido é maior que o permitido no sistema")
+        # else:
+        #     return self.tabelasPaginas(pid)[endL//tamPag].getEndQuadroMP()
+
+        tamEndL = int(self.configuracoesSistema["tamEndL"].replace("bits", "").strip())
+
+        if endL >= 2 ** tamEndL:
+            raise print("Endereço lógico excede o tamanho permitido")
+
+        idPagina = endL // tamPag
+        return self.tabelasPaginas[pid].getListaEntradasTP()[idPagina].endQuadroMP
+
         
 
     def admissao(self, pid: str, tamanho_bytes: int):
@@ -51,10 +60,11 @@ class GerenciadorDeMemoria:
 
         self.TabelaPagProcesso.adicionarEntrada(EntradaTPP(pid, num_paginas))
 
-        print(f"\n[{pid}] Processo criado com {tamanho_bytes} bytes ({num_paginas} páginas).")
+        print(f"\n[{pid}] Processo criado com {tamanho_bytes} bytes e ({num_paginas} páginas).")
         print(f"[{pid}] Tabela de Páginas inicializada:\n")
 
-        processo = Processo(pid, tamanho_bytes, self.configuracoesSistema["tamPag"])
+
+        processo = Processo(pid, tamanho_bytes, tam_pagina)
         self.MS.alocarProcesso(processo)
 
         # Se alguma pagina foi removida da MP para adicionar essa, precisa atualizar na respectiva tabela de pagina
@@ -70,8 +80,8 @@ class GerenciadorDeMemoria:
         #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
         self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
 
-        for i, entrada in enumerate(tabela_de_paginas.listaEntradasTP):
-            print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+        for id_pagina, entrada in tabela_de_paginas.listaEntradasTP.items():
+            print(f"  Página {id_pagina:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
 
         #Adicionando na fila de pronto
         self.filaPronto.append(pid)
@@ -212,12 +222,13 @@ class GerenciadorDeMemoria:
             self.escrever(pid, endLogico)
 
     def instrucaoCPU(self, pid, endLogico):
+        tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
             self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
             self.TLB.reiniciarTLB()
-
+    
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:

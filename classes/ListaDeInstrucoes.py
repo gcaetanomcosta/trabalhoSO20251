@@ -9,7 +9,7 @@ class ListaDeInstrucoes:
 
     def _carregar_arquivo(self, caminho_arquivo: str):
         try:
-            with open(caminho_arquivo, 'r') as arquivo:
+            with open(caminho_arquivo, 'r') as arquivo:        
                 for numero_linha, linha in enumerate(arquivo, start=1):
                     linha = linha.strip()
                     if not linha or linha.startswith("#"):
