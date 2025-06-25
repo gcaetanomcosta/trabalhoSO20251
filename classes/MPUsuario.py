@@ -1,6 +1,5 @@
 from .transformarEmBytes import transformarEmBytes
 from .Quadro import Quadro
-from .Pagina import Pagina
 import math
 
 class MPUsuario:
@@ -61,17 +60,8 @@ class MPUsuario:
             #retornando também o endereço do quadro alocado para atualizar na tabela de paginas no gerenciador de memoria
             return [quadroLRU.getConteudoQuadro().getIdProcesso(), quadroLRU.getConteudoQuadro().getIdPagina()], quadroLRU.getEnd()
 
-    # def swapOutRelogio(self, processo, tabelaPagina, nPaginasAlocadas, MS):
-    #     """for i in range(processo.nPrePaginas()):    
-    #         paginaNova = Pagina(i + nPaginasAlocadas, processo.getIdProcesso(), processo.paginar())
-    #         #Selecionando pagina para ser suspensa
-            
-        
-    #         #verifica se a pagina foi modificada
-    #         if tabelaPagina.verificarM(nPaginasAlocadas + i):
-    #             #atualizar valores na MS
-    #             MS.atualizarPagina()"""
-    #     pass
+    def setBitU(self, endReal):
+        self.bit_uso[endReal] = 1
 
     def swapOutRelogio(self, paginaNova, tabelasPaginas):
         while True:

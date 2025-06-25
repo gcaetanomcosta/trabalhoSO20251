@@ -150,7 +150,7 @@ class GerenciadorDeMemoria:
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
-            #fazer logica do bit u aqui.
+            self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Conteudo do endereço lógico {endLogico} do processo {pid} no endereço real {endReal} lido com sucesso!")
             #verificar se página está na TLB
@@ -197,7 +197,7 @@ class GerenciadorDeMemoria:
         tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
-            #fazer logica do bit u aqui.
+            self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             self.tabelasPaginas[pid].setBitM(endLogico//tamPag, 1)
             print(f"Operação de escrita no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} finalizado com sucesso!")
@@ -241,7 +241,7 @@ class GerenciadorDeMemoria:
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
-            #fazer logica do bit u aqui.
+            self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Instrução localizada no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} realizada com sucesso!")
             #verificar se página está na TLB
