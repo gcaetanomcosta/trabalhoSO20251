@@ -43,4 +43,18 @@ class Instrucao:
         return None
 
     def __repr__(self):
-        return f"Instrucao(pid={self.pid}, tipo={self.tipo}, args={self.args})"
+        return self.__str__()
+
+    def __str__(self):
+        tipo_descricao = {
+            "C": "Criação",
+            "P": "Execução",
+            "R": "Leitura",
+            "W": "Escrita",
+            "I": "Entrada/Saída",
+            "T": "Terminação"
+        }
+
+        descricao = tipo_descricao.get(self.tipo, "Desconhecida")
+        argumentos = " ".join(map(str, self.args)) if self.args else ""
+        return f"[{self.pid}] {descricao} {argumentos}".strip()

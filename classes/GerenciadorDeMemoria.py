@@ -21,6 +21,7 @@ class GerenciadorDeMemoria:
             self.configuracoesSistema = {"tamMPUsuario": argv[1], "tamPag": argv[2], "tamEndL": argv[3], "nLinhasTLB": argv[4], "tamMS": argv[5], "politicaSubstituicao": argv[6]}
         else:
             self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
+            #self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "2MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
 
         self.tabelasPaginas = {}
         self.processoExecutando = None
@@ -41,10 +42,11 @@ class GerenciadorDeMemoria:
 
         tamEndL = int(self.configuracoesSistema["tamEndL"].replace("bits", "").strip())
 
-        if endL >= 2 ** tamEndL:
+        if endL >= 2 ** tamEndL: # Potencia de 2 adicionada para verificar o tamanho máximo do endereço lógico
             raise print("Endereço lógico excede o tamanho permitido")
 
         idPagina = endL // tamPag
+        print(f"Endereço lógico {endL} corresponde à página {idPagina} e offset {endL % tamPag}")
         return self.tabelasPaginas[pid].getListaEntradasTP()[idPagina].endQuadroMP
 
         
@@ -330,7 +332,8 @@ class GerenciadorDeMemoria:
         caminho = "classes/entradas/entrada1.txt"
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:
-            print(f"Executando: {instrucao}")
+            input(f"\nPressione Enter para executar a instrução: {instrucao}")
+            print(f"\nExecutando: {instrucao}")
             self.realizarInstrucao(instrucao)
         pass
 
