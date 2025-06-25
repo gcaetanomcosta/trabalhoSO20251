@@ -44,10 +44,11 @@ class GerenciadorDeMemoria:
 
         tamEndL = int(self.configuracoesSistema["tamEndL"].replace("bits", "").strip())
 
-        if endL >= 2 ** tamEndL:
+        if endL >= 2 ** tamEndL: # Potencia de 2 adicionada para verificar o tamanho máximo do endereço lógico
             raise print("Endereço lógico excede o tamanho permitido")
 
         idPagina = endL // tamPag
+        print(f"Endereço lógico {endL} corresponde à página {idPagina} e offset {endL % tamPag}")
         return self.tabelasPaginas[pid].getListaEntradasTP()[idPagina].endQuadroMP
 
         
@@ -333,7 +334,8 @@ class GerenciadorDeMemoria:
         caminho = "classes/entradas/entrada1.txt"
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:
-            print(f"Executando: {instrucao}")
+            input(f"\nPressione Enter para executar a instrução: {instrucao}")
+            print(f"\nExecutando: {instrucao}")
             self.realizarInstrucao(instrucao)
         pass
 
