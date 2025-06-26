@@ -22,7 +22,8 @@ class MS:
             raise print("Não há espaço na memória secundária disponível para alocar o processo")
     
     def obterPaginaProcesso(self, idProcesso, idPagina):
-        if idPagina>len(list(self.processos.values()))-1:
+        #Se o processo não possuir a página referenciada
+        if idPagina > self.processos[idProcesso].getNPaginas()-1:
             raise print(f"Processo {idProcesso} não possui a página {idPagina} referenciada pelo endereço lógico")
         else:
             processo = self.processos[idProcesso]

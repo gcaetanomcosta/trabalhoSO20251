@@ -20,8 +20,10 @@ class GerenciadorDeMemoria:
         if len(argv) == 6:
             self.configuracoesSistema = {"tamMPUsuario": argv[1], "tamPag": argv[2], "tamEndL": argv[3], "nLinhasTLB": argv[4], "tamMS": argv[5], "politicaSubstituicao": argv[6]}
         else:
-            self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
-            #self.configuracoesSistema = {"tamMPUsuario": "48MB","tamPag": "16MB","tamEndL": "32bits","nLinhasTLB": "4","tamMS": "256GB","politicaSubstituicao": "Relógio"}
+            #self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
+            #self.configuracoesSistema = {"tamMPUsuario": "256MB", "tamPag": "16MB", "tamEndL": }
+            
+            self.configuracoesSistema = {"tamMPUsuario": "48MB","tamPag": "16MB","tamEndL": "32bits","nLinhasTLB": "4","tamMS": "256GB","politicaSubstituicao": "LRU"}
             #self.configuracoesSistema = {"tamMPUsuario": "128MB","tamPag": "4MB","tamEndL": "32bits","nLinhasTLB": "4","tamMS": "256GB","politicaSubstituicao": "Relógio"}
         
 
@@ -224,14 +226,14 @@ class GerenciadorDeMemoria:
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
                 elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
+                #atualizando TLB se a pagina removida estiver na TLB
+                if paginaRemovida[0] == self.processoExecutando:
+                    if self.TLB.verificarPresencaPag(paginaRemovida[1]):
+                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
-            #atualizando TLB se a pagina removida estiver na TLB
-            if paginaRemovida[0] == self.processoExecutando:
-                self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
-
-            #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
-            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
-
+            #atualizando a tabela de pagina do processo para incluir a presença da pagina nova alocada em MP
+            self.tabelasPaginas[pid].atualizarEntrada(endLogico//transformarEmBytes(self.configuracoesSistema["tamPag"]), endQuadroAlocado, 1, 0)
+            
             #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
             #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
@@ -277,12 +279,14 @@ class GerenciadorDeMemoria:
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
                 elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
-            #atualizando TLB se a pagina removida estiver na TLB
-            if paginaRemovida[0] == self.processoExecutando:
-                self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
+                #atualizando TLB se a pagina removida estiver na TLB
+                if paginaRemovida[0] == self.processoExecutando:
+                    if self.TLB.verificarPresencaPag(paginaRemovida[1]):
+                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
-            #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
-            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
+
+            #atualizando a tabela de pagina do processo para incluir a presença da pagina nova alocada em MP
+            self.tabelasPaginas[pid].atualizarEntrada(endLogico//transformarEmBytes(self.configuracoesSistema["tamPag"]), endQuadroAlocado, 1, 0)
 
             #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
             #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
@@ -325,13 +329,14 @@ class GerenciadorDeMemoria:
             #pagina removida é [idProcesso, idPagina]
             if paginaRemovida != []:
                 self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0)
+                #atualizando TLB se a pagina removida estiver na TLB
+                if paginaRemovida[0] == self.processoExecutando:
+                    if self.TLB.verificarPresencaPag(paginaRemovida[1]):
+                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
-            #atualizando TLB se a pagina removida estiver na TLB
-            if paginaRemovida[0] == self.processoExecutando:
-                self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
-            #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
-            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
+            #atualizando a tabela de pagina do processo para incluir a presença da pagina nova alocada em MP
+            self.tabelasPaginas[pid].atualizarEntrada(endLogico//transformarEmBytes(self.configuracoesSistema["tamPag"]), endQuadroAlocado, 1, 0)
 
             #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
             #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
@@ -396,7 +401,7 @@ class GerenciadorDeMemoria:
             sys.exit(1)
 
     def operarInterface(self):
-        caminho = "classes/entradas/entrada3.txt"
+        caminho = "classes/entradas/entrada4.txt"
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:
             input(f"\nPressione Enter para executar a instrução: {instrucao}")

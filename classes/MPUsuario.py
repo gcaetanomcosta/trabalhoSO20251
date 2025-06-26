@@ -14,7 +14,7 @@ class MPUsuario:
         self.tamMPUsuario = tamMPUsuario
         #para fazer substituição por LRU, será usada como uma fila
         self.ultimosQuadrosReferenciados = []
-
+        
         # for i in range(self.nQuadros):
         #     self.quadrosMP[i*tamPag] = Quadro(i*tamPag, None)
 
@@ -98,13 +98,13 @@ class MPUsuario:
                 self.quadrosMP[i*self.tamPag].alocarPagina(pagina)
                 #atualizando ultimosQuadrosReferenciados
                 # self.adicionarUltimosQuadrosReferenciados(i)
-                self.adicionarUQR(i)
+                self.adicionarUQR(i*self.tamPag)
                 return [], i*self.tamPag
 
         #caso não hajam quadros disponiveis:
         #LRU
         if self.politicaSubstituicao == "LRU":
-            self.swapOutLRU(pagina, tabelasPaginas)
+            return self.swapOutLRU(pagina, tabelasPaginas)
 
         #Relogio
         elif self.politicaSubstituicao == "Relógio":

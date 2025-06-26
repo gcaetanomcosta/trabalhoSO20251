@@ -32,10 +32,13 @@ class TLB:
         print(f"Página {idPagina} adicionada à TLB")
 
     def atualizarPagTLB(self, validade, idPagina, bitP, bitM, endQuadroMP):
+        atualizou = False
         for i in range(self.n_linhas): 
             if self.linhas[i].getIdPagina() == idPagina:
                 self.linhas[i] = EntradaTLB(validade, idPagina, bitP, bitM, endQuadroMP)
-        raise print(f"Página {idPagina} não está na TLB, logo não pode ser atualizada")
+                atualizou = True
+        if not atualizou:
+            raise print(f"Página {idPagina} não está na TLB, logo não pode ser atualizada")
 
     def verificarPresencaPag(self, idPagina):
         for i in range(self.n_linhas):
