@@ -35,3 +35,10 @@ class EntradaTLB:
 
     def setEndQuadroMP(self, valor):
         self.endQuadroMP = valor    
+    
+    def printarEntradaTLB(self):
+        print("Validade:", self.validade, end=", ")
+        print("Página:", self.idPagina, end=", ")
+        print("bit P:", self.bitP, end=", ")
+        print("bit M:", self.bitM, end=", ")
+        print("Endereço Real:", self.endQuadroMP)

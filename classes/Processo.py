@@ -20,3 +20,6 @@ class Processo:
     
     def getTamProcesso(self):
         return self.tamProcesso
+    
+    def printarProcesso(self):
+        print("Processo:", self.idProcesso)

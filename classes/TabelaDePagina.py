@@ -5,14 +5,14 @@ class TabelaDePagina:
         self.listaEntradasTP = {}
         self.estadoProcesso = "pronto"
         for i in range(n_paginas):
-            self.listaEntradasTP[i] = EntradaTP(bitP=0, bitM=0, bitU=0, endQuadroMP=None)
+            self.listaEntradasTP[i] = EntradaTP(bitP=0, bitM=0, endQuadroMP=None)
     
-    def atualizarEntrada(self, idPagina, end, bitP, bitM, bitU):
+
+    def atualizarEntrada(self, idPagina, end, bitP, bitM):
         entrada = self.listaEntradasTP[idPagina]
         entrada.endQuadroMP = end
         entrada.bitP = bitP
         entrada.bitM = bitM
-        entrada.bitU = bitU
 
     def verificarM(self, idPagina):
         return self.listaEntradasTP[idPagina].getBitM()
@@ -49,3 +49,11 @@ class TabelaDePagina:
             self.listaEntradasTP[i].endQuadroMP = None
         self.estadoProcesso = "bloqueado"
 
+    def printarTP(self):
+        print(f"Estado: {self.estadoProcesso}")
+        print("Tabela de páginas:")
+        entradas = list(self.listaEntradasTP.values())
+        for i in range(len(entradas)):
+            print(i, end=" ")
+            entradas[i].printarEntradaTP()
+            print("--------------------------------------------------------------------------------")

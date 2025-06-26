@@ -28,4 +28,12 @@ class MS:
             processo = self.processos[idProcesso]
             conteudo = processo.getConteudo()[idPagina]
             return Pagina(idProcesso, idPagina, conteudo)
+        
+    def printarMS(self):
+        print("Memória Secundária:")
+        indices = list(self.processos.keys())
+        for i in range(len(indices)):
+            self.processos[indices[i]].printarProcesso()
+            print("--------------------------------------------------------------------------------")
+            
     

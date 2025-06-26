@@ -25,3 +25,10 @@ class TabelaPagProcesso:
         else:
             print(f"Processo {idProcesso} removido da tabela de paginas por processo")
     
+    def printarTPP(self):
+        entradas = list(self.lista_entradas.values())
+        print("Tabela de páginas por processo:")
+        for i in range(len(entradas)):
+            print(i, end=" ")
+            entradas[i].printarEntradaTPP()
+            print("--------------------------------------------------------------------------------")

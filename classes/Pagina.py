@@ -15,3 +15,6 @@ class Pagina:
     
     def getIdProcesso(self):
         return self.idProcesso
+
+    def printarPagina(self):
+        print("Processo:", self.idProcesso, "Página:", self.idPagina)

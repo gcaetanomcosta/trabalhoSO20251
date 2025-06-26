@@ -47,14 +47,15 @@ class Instrucao:
 
     def __str__(self):
         tipo_descricao = {
-            "C": "Criação",
-            "P": "Execução",
-            "R": "Leitura",
-            "W": "Escrita",
-            "I": "Entrada/Saída",
-            "T": "Terminação"
+            "C": "C",
+            "P": "P",
+            "R": "R",
+            "W": "W",
+            "I": "I",
+            "T": "T"
         }
 
         descricao = tipo_descricao.get(self.tipo, "Desconhecida")
         argumentos = " ".join(map(str, self.args)) if self.args else ""
-        return f"[{self.pid}] {descricao} {argumentos}".strip()
+        #return f"[{self.pid}] {descricao} {argumentos}".strip()
+        return f"{self.pid} {descricao} {argumentos}".strip()

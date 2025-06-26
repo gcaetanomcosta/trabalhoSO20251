@@ -20,3 +20,9 @@ class Quadro:
     
     def getEnd(self):
         return self.end
+    
+    def printarQuadro(self):
+        if self.conteudoQuadro!=None:
+            self.conteudoQuadro.printarPagina()
+            
+

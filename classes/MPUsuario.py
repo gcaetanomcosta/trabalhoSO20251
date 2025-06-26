@@ -128,3 +128,16 @@ class MPUsuario:
             self.quadrosMP[self.ultimosQuadrosReferenciados[0]].limpar()
             #atualizando UQR
             self.removerUQR(quadroComPagSaindo.getEnd())
+
+    def printarMPUsuario(self):
+        print("Memória Principal dos processos do usuário:", end="\n\n")
+        indices = list(self.quadrosMP.keys())
+        quadros = list(self.quadrosMP.values())
+        #printar a mpusuario toda
+        #for i in range(len(indices)):
+        #printar apenas linhas ocupadas
+        for i in range(len(self.ultimosQuadrosReferenciados)):
+            print(indices[i], end=" ")
+            quadros[i].printarQuadro()
+            print("--------------------------------------------------------------------------------")
+

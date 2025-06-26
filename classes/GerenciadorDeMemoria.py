@@ -55,12 +55,27 @@ class GerenciadorDeMemoria:
 
     def admissao(self, pid: str, tamanho_bytes: int):
 
+        #atualizando estado executando e pronto
+        if self.processoExecutando != pid:
+            if self.processoExecutando is not None:
+                # Se o processo que estava executando não é o pid, ele volta para pronto
+                self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+                self.filaPronto.append(self.processoExecutando)
+                self.TLB.reiniciarTLB()            
+            self.processoExecutando = pid
+            if self.processoExecutando in self.filaBloqueado:
+                self.filaBloqueado.remove(pid)
+            elif self.processoExecutando in self.filaPronto:
+                self.filaPronto.remove(pid)
+            
+            
         tam_pagina = transformarEmBytes(self.configuracoesSistema["tamPag"])
         #num_paginas é tam_processo / tam_pagina arrendondado para cima 
         num_paginas = math.ceil(tamanho_bytes / tam_pagina)  # arredondamento para cima
 
         tabela_de_paginas = TabelaDePagina(num_paginas)
         self.tabelasPaginas[pid] = tabela_de_paginas
+        self.tabelasPaginas[pid].setEstadoProcesso("executando")
 
         self.TabelaPagProcesso.adicionarEntrada(EntradaTPP(pid, num_paginas))
 
@@ -75,27 +90,41 @@ class GerenciadorDeMemoria:
         paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, 0), self.tabelasPaginas)
         #pagina removida é [idProcesso, idPagina]
         if paginaRemovida != []:
-            self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
+            self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0)
             if self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "pronto":
                 self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
             elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
                 self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("bloqueado suspenso")
             
         #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
-        self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
+        self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
 
-        for id_pagina, entrada in tabela_de_paginas.listaEntradasTP.items():
-            print(f"  Página {id_pagina:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+        #for id_pagina, entrada in tabela_de_paginas.listaEntradasTP.items():
+        #    print(f"  Página {id_pagina:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
 
         #Adicionando na fila de pronto
-        self.filaPronto.append(pid)
-        print(f"Processo {pid} adicionado na fila dos prontos")
+        #self.filaPronto.append(pid)
+        #print(f"Processo {pid} adicionado na fila dos prontos")
 
 
         print(f"\n[{pid}] TPP atualizada com sucesso.\n")
         print(f"Admissão do processo {pid} finalizada com sucesso")
 
     def liberar(self, pid):
+        #atualizando estado executando e pronto
+        if self.processoExecutando != pid:
+            if self.processoExecutando is not None:
+                # Se o processo que estava executando não é o pid, ele volta para pronto
+                self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+                self.filaPronto.append(self.processoExecutando)
+            self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.processoExecutando = pid
+            if self.processoExecutando in self.filaBloqueado:
+                self.filaBloqueado.remove(pid)
+            elif self.processoExecutando in self.filaPronto:
+                self.filaPronto.remove(pid)
+            self.TLB.reiniciarTLB()
+
         enderecosComPagDoProcesso = []
         tabelaPaginaProcessoSaindo = self.tabelasPaginas[pid]
         #obtendo lista de endereços dos quadros que possuem paginas do processo a ser desalocado
@@ -113,19 +142,31 @@ class GerenciadorDeMemoria:
         print(f"Tabela de paginas do processo {pid} removida")
         self.TabelaPagProcesso.pop(pid)
         print(f"Processo {pid} removido da tabela de paginas por processo")
-        #Removendo das filas
-        if pid in self.filaBloqueado:
-            self.filaBloqueado.remove(pid)
-            print(f"Processo {pid} removido da fila dos bloqueados")
-        if pid in self.filaPronto:
-            self.filaPronto.remove(pid)
-            print(f"Processo {pid} removido da fila dos prontos")
         
+        #Definindo novo processo executando
+        if self.filaPronto!= []:
+            self.processoExecutando = self.filaPronto[0]
+        else:
+            self.processoExecutando = None
         
         print(f"Liberação do processo {pid} finalizada com sucesso")
         
 
     def bloquear(self, pid):
+        #atualizando estado executando e pronto
+        if self.processoExecutando != pid:
+            if self.processoExecutando is not None:
+                # Se o processo que estava executando não é o pid, ele volta para pronto
+                self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+                self.filaPronto.append(self.processoExecutando)
+            self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.processoExecutando = pid
+            if self.processoExecutando in self.filaBloqueado:
+                self.filaBloqueado.remove(pid)
+            elif self.processoExecutando in self.filaPronto:
+                self.filaPronto.remove(pid)
+            self.TLB.reiniciarTLB()
+
         if "suspenso" in self.tabelasPaginas[pid].getEstadoProcesso(): 
             self.tabelasPaginas[pid].setEstadoProcesso("bloqueado suspenso")
         else:
@@ -138,6 +179,12 @@ class GerenciadorDeMemoria:
             print(f"Processo {pid} adicionado na fila dos bloqueados")
         print(f"Bloqueio do processo {pid} finalizado com sucesso")
 
+        #Definindo novo processo executando
+        if self.filaPronto!= []:
+            self.processoExecutando = self.filaPronto[0]
+        else:
+            self.processoExecutando = None
+
     def ler(self, pid, endLogico):
         tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         #atualizando estado executando e pronto
@@ -145,7 +192,13 @@ class GerenciadorDeMemoria:
             if self.processoExecutando is not None:
                 # Se o processo que estava executando não é o pid, ele volta para pronto
                 self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+                self.filaPronto.append(self.processoExecutando)
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.processoExecutando = pid
+            if self.processoExecutando in self.filaBloqueado:
+                self.filaBloqueado.remove(pid)
+            elif self.processoExecutando in self.filaPronto:
+                self.filaPronto.remove(pid)
             self.TLB.reiniciarTLB()
 
         #pagina está na memória
@@ -157,7 +210,7 @@ class GerenciadorDeMemoria:
             #verificar se página está na TLB
             if not self.TLB.verificarPresencaPag(endLogico//tamPag):
                 #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid][endLogico//tamPag].getBitM(), endReal)
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
             tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
@@ -166,7 +219,7 @@ class GerenciadorDeMemoria:
             paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, endLogico//tamPag), self.tabelasPaginas)
             #pagina removida é [idProcesso, idPagina]
             if paginaRemovida != []:
-                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
+                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0)
                 if self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "pronto":
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
                 elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
@@ -177,10 +230,10 @@ class GerenciadorDeMemoria:
                 self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
             #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
-            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
+            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
 
-            for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
-                print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+            #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
+            #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
             self.ler(pid, endLogico)
 
@@ -191,7 +244,13 @@ class GerenciadorDeMemoria:
             if self.processoExecutando is not None:
                 # Se o processo que estava executando não é o pid, ele volta para pronto
                 self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+                self.filaPronto.append(self.processoExecutando)
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.processoExecutando = pid
+            if self.processoExecutando in self.filaBloqueado:
+                self.filaBloqueado.remove(pid)
+            elif self.processoExecutando in self.filaPronto:
+                self.filaPronto.remove(pid)
             self.TLB.reiniciarTLB()
 
         #pagina está na memória
@@ -205,7 +264,7 @@ class GerenciadorDeMemoria:
             #verificar se página está na TLB
             if not self.TLB.verificarPresencaPag(endLogico//tamPag):
                 #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid][endLogico//tamPag].getBitM(), endReal)
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
             print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
@@ -213,7 +272,7 @@ class GerenciadorDeMemoria:
             paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, endLogico//tamPag), self.tabelasPaginas)
             #pagina removida é [idProcesso, idPagina]
             if paginaRemovida != []:
-                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
+                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0)
                 if self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "pronto":
                     self.tabelasPaginas[paginaRemovida[0]].setEstadoProcesso("pronto suspenso")
                 elif self.tabelasPaginas[paginaRemovida[0]].getEstadoProcesso() == "bloqueado":
@@ -223,21 +282,29 @@ class GerenciadorDeMemoria:
                 self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
             #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
-            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
+            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
 
-            for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
-                print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+            #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
+            #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
             self.escrever(pid, endLogico)
 
     def instrucaoCPU(self, pid, endLogico):
-        tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
             if self.processoExecutando is not None:
+                # Se o processo que estava executando não é o pid, ele volta para pronto
                 self.tabelasPaginas[self.processoExecutando].setEstadoProcesso("pronto")
+                self.filaPronto.append(self.processoExecutando)
             self.tabelasPaginas[pid].setEstadoProcesso("executando")
+            self.processoExecutando = pid
+            if self.processoExecutando in self.filaBloqueado:
+                self.filaBloqueado.remove(pid)
+            elif self.processoExecutando in self.filaPronto:
+                self.filaPronto.remove(pid)
             self.TLB.reiniciarTLB()
+
+        tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
     
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
@@ -248,7 +315,7 @@ class GerenciadorDeMemoria:
             #verificar se página está na TLB
             if not self.TLB.verificarPresencaPag(endLogico//tamPag):
                 #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid][endLogico//tamPag].getBitM(), endReal)
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
             tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
@@ -257,17 +324,17 @@ class GerenciadorDeMemoria:
             paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, endLogico//tamPag), self.tabelasPaginas)
             #pagina removida é [idProcesso, idPagina]
             if paginaRemovida != []:
-                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0, 0)
+                self.tabelasPaginas[paginaRemovida[0]].atualizarEntrada(paginaRemovida[1], None, 0, 0)
 
             #atualizando TLB se a pagina removida estiver na TLB
             if paginaRemovida[0] == self.processoExecutando:
                 self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
 
             #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
-            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0, 0)
+            self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
 
-            for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
-                print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
+            #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
+            #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
             self.instrucaoCPU(pid, endLogico)
 
@@ -322,8 +389,6 @@ class GerenciadorDeMemoria:
                 for erro in lista.erros:
                     print(erro)
                     sys.exit(1)
-
-
             return lista
 
         except FileNotFoundError as e:
@@ -331,12 +396,42 @@ class GerenciadorDeMemoria:
             sys.exit(1)
 
     def operarInterface(self):
-        caminho = "classes/entradas/entrada1.txt"
+        caminho = "classes/entradas/entrada3.txt"
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:
             input(f"\nPressione Enter para executar a instrução: {instrucao}")
             print(f"\nExecutando: {instrucao}")
             self.realizarInstrucao(instrucao)
+            self.printarGM()
         pass
+
+    def printarTabelasPaginas(self):
+        #print("Tabelas de páginas e estado de cada processos:")
+        indices = list(self.tabelasPaginas.keys())
+        for i in range(len(indices)):
+            print("Processo:", indices[i])
+            self.tabelasPaginas[indices[i]].printarTP()
+            print("\n")
+
+        print("\n")
+
+    def printarFilas(self):
+        print("Fila bloqueado:", self.filaBloqueado)
+        print("Fila pronto:", self.filaPronto, end="\n\n\n")
+
+    def printarGM(self):
+        print("\n\n")
+        print("Processo executando:", self.processoExecutando, end="\n\n\n")
+        self.TLB.printarTLB()
+        print("\n\n")
+        self.TabelaPagProcesso.printarTPP()
+        print("\n\n")
+        self.printarTabelasPaginas()
+        print("\n\n")
+        self.printarFilas()
+        print("\n\n")
+        self.MPUsuario.printarMPUsuario()
+        print("\n\n")
+        self.MS.printarMS()
 
     

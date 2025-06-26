@@ -39,6 +39,13 @@ class TLB:
 
     def verificarPresencaPag(self, idPagina):
         for i in range(self.n_linhas):
-            if self.linhas[i].getIdPagina() == idPagina:
+            if self.linhas[i].getIdPagina() == idPagina and self.linhas[i].getValidade() == 1:
                 return True
         return False
+    
+    def printarTLB(self):
+        print("Linhas da TLB:")
+        for i in range(len(self.linhas)):
+            print(i, end=" ")
+            self.linhas[i].printarEntradaTLB()
+            print("--------------------------------------------------------------------------------")

@@ -1,8 +1,7 @@
 class EntradaTP:
-    def __init__(self, bitP, bitM, bitU, endQuadroMP):
+    def __init__(self, bitP, bitM, endQuadroMP):
         self.bitP = bitP
         self.bitM = bitM
-        self.bitU = bitU
         self.endQuadroMP = endQuadroMP
 
 
@@ -17,3 +16,9 @@ class EntradaTP:
     
     def getEndQuadroMP(self):
         return self.endQuadroMP
+    
+    def printarEntradaTP(self):
+        print("bit P:", self.bitP, end=", ")
+        print("bit M:", self.bitP, end=", ")
+        print("Endereço Real:", self.endQuadroMP)
+
