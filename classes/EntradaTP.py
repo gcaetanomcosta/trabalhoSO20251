@@ -19,6 +19,6 @@ class EntradaTP:
     
     def printarEntradaTP(self):
         print("bit P:", self.bitP, end=", ")
-        print("bit M:", self.bitP, end=", ")
+        print("bit M:", self.bitM, end=", ")
         print("Endereço Real:", self.endQuadroMP)
 

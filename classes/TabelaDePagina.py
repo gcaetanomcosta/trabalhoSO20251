@@ -43,7 +43,6 @@ class TabelaDePagina:
     
     def bloquearProcesso(self):
         for i in range(len(list(self.listaEntradasTP.values()))):
-            self.listaEntradasTP[i].bitU = 0
             self.listaEntradasTP[i].bitP = 0
             self.listaEntradasTP[i].bitM = 0
             self.listaEntradasTP[i].endQuadroMP = None

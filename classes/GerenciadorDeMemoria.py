@@ -100,6 +100,7 @@ class GerenciadorDeMemoria:
             
         #atualizando a tabela de pagina do processo novo para incluir a presença da primeira pagina em MP
         self.tabelasPaginas[pid].atualizarEntrada(0, endQuadroAlocado, 1, 0)
+        
 
         #for id_pagina, entrada in tabela_de_paginas.listaEntradasTP.items():
         #    print(f"  Página {id_pagina:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
@@ -152,7 +153,6 @@ class GerenciadorDeMemoria:
             self.processoExecutando = None
         
         print(f"Liberação do processo {pid} finalizada com sucesso")
-        
 
     def bloquear(self, pid):
         #atualizando estado executando e pronto
@@ -233,7 +233,6 @@ class GerenciadorDeMemoria:
 
             #atualizando a tabela de pagina do processo para incluir a presença da pagina nova alocada em MP
             self.tabelasPaginas[pid].atualizarEntrada(endLogico//transformarEmBytes(self.configuracoesSistema["tamPag"]), endQuadroAlocado, 1, 0)
-            
             #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
             #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
