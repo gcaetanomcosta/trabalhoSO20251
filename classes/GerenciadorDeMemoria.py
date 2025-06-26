@@ -401,6 +401,7 @@ class GerenciadorDeMemoria:
 
     def operarInterface(self):
         caminho = "classes/entradas/entrada4.txt"
+        self.printarConfiguracoes()
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:
             input(f"\nPressione Enter para executar a instrução: {instrucao}")
@@ -438,4 +439,10 @@ class GerenciadorDeMemoria:
         print("\n\n")
         self.MS.printarMS()
 
+    def printarConfiguracoes(self):
+        print("--------------------------------------------------------------------------------")
+        print("======= Configurações do sistema =======")
+        for key, value in self.configuracoesSistema.items():
+            print(f"{key}: {value}")
+        print("--------------------------------------------------------------------------------")
     
