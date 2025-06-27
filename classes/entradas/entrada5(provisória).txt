@@ -1,0 +1,48 @@
+
+# CONFIGURAÇÃO RECOMENDADA : 
+
+#    "tamMPUsuario": "16MB",        # 4 quadros (com 4MB/página)
+#    "tamPag": "4MB",               # Página de 4MB
+#    "tamEndL": "32bits",           # Capacidade de usar endereços grandes
+#    "nLinhasTLB": "4",             # TLB pequena (para forçar substituição)
+#    "tamMS": "256MB",              # MS grande o suficiente
+#    "politicaSubstituicao": "Relógio"  # Para testar bit de uso (bit u)
+
+
+#CRIAÇÃO DE PROCESSOS P1 E P2
+P1 C 20 MB
+P2 C 5 MB
+P1 P (0)10
+P1 R (0)10
+P1 P (4194304)10
+P1 W (4194304)10
+P2 P (18756)10
+P1 I
+P1 R (9194304)10
+
+#TERMINA P1
+P1 T
+
+P2 R (0)10
+P2 I
+P2 W (94304)10
+P2 P (8776)10
+
+#P3 É CRIADO
+P3 C 34 MB
+
+P3 P (O)10
+P3 R (8388608)10
+P2 W (4156321814)10
+P3 P (5563215)10
+P3 W (63218)10
+
+#TERMINA P3
+P3 T
+
+P2 I
+P2 W (88755)10
+P2 P (654)10
+
+#P2 TERMINA
+P2 T

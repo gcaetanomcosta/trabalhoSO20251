@@ -1,0 +1,66 @@
+
+# CONFIGURAÇÃO RECOMENDADA : 
+
+#    "tamMPUsuario": "16MB",        # 4 quadros (com 4MB/página)
+#    "tamPag": "4MB",               # Página de 4MB
+#    "tamEndL": "32bits",           # Capacidade de usar endereços grandes
+#    "nLinhasTLB": "4",             # TLB pequena (para forçar substituição)
+#    "tamMS": "256MB",              # MS grande o suficiente
+#    "politicaSubstituicao": "Relógio"  # Para testar bit de uso (bit u)
+
+# Criação dos processos
+P1 C 20 MB      # P1: 5 páginas
+P2 C 8 MB       # P2: 2 páginas
+
+# P1 usa 2 páginas
+P1 P (0)10
+P1 R (0)10
+P1 P (4194304)10
+P1 W (4194304)10
+
+# P2 usa página 0
+P2 P (18756)10
+P2 R (0)10
+
+# P1 bloqueado
+P1 I
+
+# P2 acessa página 1
+P2 W (94304)10
+P2 P (8776)10
+
+# P3 entra: 34MB = 9 páginas (força substituição)
+P3 C 34 MB
+
+P3 P (0)10
+P3 R (4194304)10
+P3 R (8388608)10
+P3 R (12582912)10
+
+# P3 ativa bit M
+P3 W (16777216)10
+
+# P2 volta, pode causar page-in
+P2 W (4194304)10
+P2 P (5563215)10
+
+# P3 continua ocupando memória
+P3 W (21012480)10
+P3 R (25165824)10
+P3 R (29360128)10
+P3 R (33554432)10
+
+# P3 termina
+P3 T
+
+# P2 continua
+P2 I
+P2 W (88755)10
+P2 P (654)10
+
+# P1 retorna e finaliza
+P1 R (12582912)10
+P1 T
+
+# P2 finaliza
+P2 T
