@@ -112,7 +112,7 @@ class GerenciadorDeMemoria:
 
     def admissao(self, pid: str, tamanho_bytes: int):
 
-        #atualizando estado executando e pronto
+        """#atualizando estado executando e pronto
         if self.processoExecutando != pid:
             if self.processoExecutando is not None:
                 # Se o processo que estava executando não é o pid, ele volta para pronto
@@ -123,7 +123,7 @@ class GerenciadorDeMemoria:
             if self.processoExecutando in self.filaBloqueado:
                 self.filaBloqueado.remove(pid)
             elif self.processoExecutando in self.filaPronto:
-                self.filaPronto.remove(pid)
+                self.filaPronto.remove(pid)"""
             
             
         tam_pagina = transformarEmBytes(self.configuracoesSistema["tamPag"])
@@ -132,7 +132,7 @@ class GerenciadorDeMemoria:
 
         tabela_de_paginas = TabelaDePagina(num_paginas)
         self.tabelasPaginas[pid] = tabela_de_paginas
-        self.tabelasPaginas[pid].setEstadoProcesso("executando")
+        #self.tabelasPaginas[pid].setEstadoProcesso("executando")
 
         self.TabelaPagProcesso.adicionarEntrada(EntradaTPP(pid, num_paginas))
 
