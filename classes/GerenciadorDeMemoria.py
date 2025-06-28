@@ -17,15 +17,70 @@ class GerenciadorDeMemoria:
         #Usuario se quiser customizar as configurações do sistema precisa por 5 argumentos na hora de chamar o main, além do próprio main.py.
         #O tamanho da TLB precisa ser proporcional ao tamanho do endL e ao tamanho da pagina. o endereço lógico guarda o offset dentro de uma pagina e a referencia da pagina dentro de um processo, o numero de linhas da TLB precisa ser do tamanho maximo do conjunto residente de um processo, justamente o endereço logico menos os bits do offset.
         #Se o usuario colocar algo que não faça sentido por enquanto o programa irá crachar em algum momento. Perguntar para professora se pode deixar assim no dia da entrega final. Se não, criar um tratamento de entradas.
+        configuracoes_predefinidas = {
+            "1": {
+                "tamMPUsuario": "48MB",
+                "tamPag": "8MB",
+                "tamEndL": "32bits",
+                "nLinhasTLB": "8",
+                "tamMS": "256GB"
+            },
+            "2": {
+                "tamMPUsuario": "128MB",
+                "tamPag": "4MB",
+                "tamEndL": "32bits",
+                "nLinhasTLB": "8",
+                "tamMS": "256GB"
+            },
+            "3": {
+                "tamMPUsuario": "16MB",
+                "tamPag": "4MB",
+                "tamEndL": "32bits",
+                "nLinhasTLB": "4",
+                "tamMS": "256MB"
+            }
+        }
+
+        politicas_predefinidas = {
+            "1": "LRU",
+            "2": "Relógio"
+        }
+
         if len(argv) == 6:
             self.configuracoesSistema = {"tamMPUsuario": argv[1], "tamPag": argv[2], "tamEndL": argv[3], "nLinhasTLB": argv[4], "tamMS": argv[5], "politicaSubstituicao": argv[6]}
         else:
+            print("Escolha as configurações gerais do sistema:")
+            for key, cfg in configuracoes_predefinidas.items():
+                desc = f"MP: {cfg['tamMPUsuario']} / Tamanho de Página: {cfg['tamPag']} / EndLógico: {cfg['tamEndL']} / n_Linhas TLB: {cfg['nLinhasTLB']} / MS: {cfg['tamMS']}"
+                print(f"{key} - {desc}")
+
+            escolha = input("Digite o número da configuração desejada: ").strip()
+            config = configuracoes_predefinidas.get(escolha)
+
+            if not config:
+                print("Opção inválida. Aplicando configuração padrão 1.")
+                config = configuracoes_predefinidas["1"]
+
+            self.configuracoesSistema = config.copy()
+
+            print("\nEscolha a política de substituição:")
+            for key, pol in politicas_predefinidas.items():
+                print(f"{key} - {pol}")
+
+            escolha_pol = input("Digite o número da política: ").strip()
+            politica = politicas_predefinidas.get(escolha_pol)
+
+            if not politica:
+                print("Política inválida. Aplicando LRU por padrão.")
+                politica = "LRU"
+
+            self.configuracoesSistema["politicaSubstituicao"] = politica
+
             #self.configuracoesSistema = {"tamMPUsuario": "4GB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "64", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
-            #self.configuracoesSistema = {"tamMPUsuario": "256MB", "tamPag": "16MB", "tamEndL": }
-            
-            self.configuracoesSistema = {"tamMPUsuario": "48MB","tamPag": "16MB","tamEndL": "32bits","nLinhasTLB": "4","tamMS": "256GB","politicaSubstituicao": "LRU"}
-            #self.configuracoesSistema = {"tamMPUsuario": "128MB","tamPag": "4MB","tamEndL": "32bits","nLinhasTLB": "4","tamMS": "256GB","politicaSubstituicao": "Relógio"}
-        
+            #self.configuracoesSistema = {"tamMPUsuario": "256MB", "tamPag": "16MB", "tamEndL": "32bits", "nLinhasTLB": "8", "tamMS": "256GB", "politicaSubstituicao": "LRU"}
+            #self.configuracoesSistema = {"tamMPUsuario": "48MB","tamPag": "16MB","tamEndL": "32bits","nLinhasTLB": "8","tamMS": "256GB","politicaSubstituicao": "LRU"}
+            #self.configuracoesSistema = {"tamMPUsuario": "128MB","tamPag": "4MB","tamEndL": "32bits","nLinhasTLB": "8","tamMS": "256GB","politicaSubstituicao": "Relógio"}
+
 
         self.tabelasPaginas = {}
         self.processoExecutando = None
@@ -81,8 +136,8 @@ class GerenciadorDeMemoria:
 
         self.TabelaPagProcesso.adicionarEntrada(EntradaTPP(pid, num_paginas))
 
-        print(f"\n[{pid}] Processo criado com {tamanho_bytes} bytes e ({num_paginas} páginas).")
-        print(f"[{pid}] Tabela de Páginas inicializada:\n")
+        print(f"\n[{pid}] Processo criado com {tamanho_bytes} bytes e {num_paginas} páginas.")
+        print(f"[{pid}] Tabela de Páginas inicializada com {num_paginas} páginas.\n")
 
 
         processo = Processo(pid, tamanho_bytes, tam_pagina)
@@ -110,7 +165,7 @@ class GerenciadorDeMemoria:
         #print(f"Processo {pid} adicionado na fila dos prontos")
 
 
-        print(f"\n[{pid}] TPP atualizada com sucesso.\n")
+        print(f"[{pid}] TPP atualizada com sucesso.\n")
         print(f"Admissão do processo {pid} finalizada com sucesso")
 
     def liberar(self, pid):
@@ -349,35 +404,35 @@ class GerenciadorDeMemoria:
         match tipo:
             case "C":
                 tamanho = instrucao.get_tamanho_em_bytes()
-                print(f"[{pid}] Criar processo com {tamanho} bytes")
+                print(f"[{pid}] Criar processo com {tamanho} bytes.\n")
                 self.admissao(pid, tamanho)
 
             case "R":
                 endereco = instrucao.get_endereco_logico()
-                print(f"[{pid}] Leitura no endereço lógico {endereco}")
+                print(f"[{pid}] Leitura no endereço lógico {endereco}.\n")
                 self.ler(pid, endereco)
 
             case "W":
                 endereco = instrucao.get_endereco_logico()
-                print(f"[{pid}] Escrita no endereço lógico {endereco}")
+                print(f"[{pid}] Escrita no endereço lógico {endereco}.\n")
                 self.escrever(pid, endereco)
 
             case "P":
                 endereco = instrucao.get_endereco_logico()
-                print(f"[{pid}] Executar instrução no endereço lógico {endereco}")
+                print(f"[{pid}] Executar instrução no endereço lógico {endereco}.\n")
                 self.instrucaoCPU(pid, endereco)
 
             case "I":
                 dispositivo = instrucao.args[0]
-                print(f"[{pid}] Requisição de I/O no dispositivo '{dispositivo}'")
+                print(f"[{pid}] Requisição de I/O no dispositivo '{dispositivo}'.\n")
                 self.bloquear(pid)
 
             case "T":
-                print(f"[{pid}] Terminar processo")
+                print(f"[{pid}] Terminar processo.\n")
                 self.liberar(pid)
 
             case _:
-                print(f"[{pid}] Instrução desconhecida: {instrucao}")
+                print(f"[{pid}] Instrução desconhecida: {instrucao}.\n")
     
     def carregar_instrucoes(self, caminho: str) -> ListaDeInstrucoes:
         try:
@@ -400,12 +455,12 @@ class GerenciadorDeMemoria:
             sys.exit(1)
 
     def operarInterface(self):
-        caminho = "classes/entradas/entrada4.txt"
+        caminho = "classes/entradas/entrada5(definitiva).txt"
         self.printarConfiguracoes()
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:
             input(f"\nPressione Enter para executar a instrução: {instrucao}")
-            print(f"\nExecutando: {instrucao}")
+            print(f"\n############## Executando: {instrucao} ##############\n")
             self.realizarInstrucao(instrucao)
             self.printarGM()
         pass
@@ -426,7 +481,7 @@ class GerenciadorDeMemoria:
 
     def printarGM(self):
         print("\n\n")
-        print("Processo executando:", self.processoExecutando, end="\n\n\n")
+        print("Processo executando:", self.processoExecutando, end="\n\n")
         self.TLB.printarTLB()
         print("\n\n")
         self.TabelaPagProcesso.printarTPP()

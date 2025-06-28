@@ -9,8 +9,10 @@
 #    "politicaSubstituicao": "Relógio"  # Para testar bit de uso (bit u)
 
 # Criação dos processos
-P1 C 20 MB      # P1: 5 páginas
-P2 C 8 MB       # P2: 2 páginas
+# P1: 5 páginas
+P1 C 20 MB  
+# P2: 2 páginas    
+P2 C 8 MB       
 
 # P1 usa 2 páginas
 P1 P (0)10
@@ -23,7 +25,7 @@ P2 P (18756)10
 P2 R (0)10
 
 # P1 bloqueado
-P1 I
+P1 I (16)10
 
 # P2 acessa página 1
 P2 W (94304)10
@@ -54,7 +56,7 @@ P3 R (33554432)10
 P3 T
 
 # P2 continua
-P2 I
+P2 I (5)10
 P2 W (88755)10
 P2 P (654)10
 

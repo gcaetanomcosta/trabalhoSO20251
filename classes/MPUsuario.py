@@ -96,6 +96,7 @@ class MPUsuario:
             if self.quadrosMP[i*self.tamPag].verificarDisponivel():
                 #i serve como id da pagina, essencialmente é o número do quadro aqui.
                 self.quadrosMP[i*self.tamPag].alocarPagina(pagina)
+                print(f"Página {pagina.getIdPagina()} do processo {pagina.getIdProcesso()} alocada no quadro {i} de endereço real {i*self.tamPag}.")
                 #atualizando ultimosQuadrosReferenciados
                 # self.adicionarUltimosQuadrosReferenciados(i)
                 self.adicionarUQR(i*self.tamPag)

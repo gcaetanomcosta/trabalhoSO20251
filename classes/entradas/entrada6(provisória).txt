@@ -21,7 +21,7 @@ P2 W (8192)10
 # Página 2 (usa 3º quadro)
 P1 P (8388608)10  
 # P1 interrompe
-P1 I              
+P1 I (6)10             
 
 # Página 1 — falta, força alocação
 P2 R (4194304)10  
@@ -30,7 +30,7 @@ P2 R (4194304)10
 P2 P (8388608)10  
 
 # P2 interrompe
-P2 I              
+P2 I (4)10              
 
 # Página 0 volta — testa LRU/Relógio
 P1 R (0)10        
