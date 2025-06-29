@@ -1,0 +1,55 @@
+# CONFIG: MP = 16MB / Páginas = 4MB / TLB = 4 / MS = 256MB / Substituição: Relógio
+
+# P1 cria processo de 12 MB - 3 páginas
+P1 C 12 MB  
+
+# P2 cria processo de 8 MB - 2 páginas
+P2 C 8 MB    
+
+# P1 acessa página 0 - alocação
+P1 P (0)10  
+
+# P1 acessa página 0 novamente - força TLB hit
+P1 R (0)10  
+
+# P1 acessa página 1 - alocação
+P1 P (4194304)10  
+
+# P1 escreve na página 1 - seta bit M=1
+P1 W (4194304)10  
+
+# P1 lê página 1 novamente - força U=1
+P1 R (4194304)10  
+
+# P2 acessa página 0 - alocação
+P2 P (0)10  
+
+# P2 escreve na página 0 - seta bit M=1
+P2 W (8192)10  
+
+# P2 lê página 0 novamente - força U=1
+P2 R (8192)10  
+
+# P1 acessa página 2 - alocação - MPU cheia após isso
+P1 P (8388608)10  
+
+# P1 solicita I/O - vai para bloqueado
+P1 I (6)10  
+
+# P2 acessa página 1 - falta de página - substituição acionada
+P2 R (4194304)10  
+
+# P2 acessa página 2 - falta de página - substituição acionada novamente
+P2 P (8388608)10  
+
+# P2 solicita I/O - vai para bloqueado
+P2 I (4)10  
+
+# P1 acessa página 0 - provoca substituição, verifica comportamento Relógio
+P1 R (0)10  
+
+# P1 termina
+P1 T  
+
+# P2 termina
+P2 T  

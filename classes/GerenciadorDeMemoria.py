@@ -38,7 +38,7 @@ class GerenciadorDeMemoria:
                 "tamEndL": "32bits",
                 "nLinhasTLB": "4",
                 "tamMS": "256MB"
-            }
+            },
         }
 
         politicas_predefinidas = {
@@ -421,7 +421,7 @@ class GerenciadorDeMemoria:
             sys.exit(1)
 
     def operarInterface(self):
-        caminho = "classes/entradas/entrada5(definitiva).txt"
+        caminho = "classes/entradas/entrada_errada.txt"
         self.printarConfiguracoes()
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:
