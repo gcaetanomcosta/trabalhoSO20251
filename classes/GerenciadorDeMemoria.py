@@ -187,7 +187,10 @@ class GerenciadorDeMemoria:
         tabelaPaginaProcessoSaindo = self.tabelasPaginas[pid]
         #obtendo lista de endereços dos quadros que possuem paginas do processo a ser desalocado
         for entrada in list(tabelaPaginaProcessoSaindo.getListaEntradasTP().values()):
-            enderecosComPagDoProcesso.append(entrada.getEndQuadroMP())
+            if entrada.getEndQuadroMP() is not None:
+                enderecosComPagDoProcesso.append(entrada.getEndQuadroMP())
+            
+        print(f"Endereços com páginas do processo {pid} a serem desalocados: {enderecosComPagDoProcesso}")   
         #desalocando cada pagina do processo
         for end in enderecosComPagDoProcesso:
             self.MPUsuario.desalocarPagina(end, self.tabelasPaginas)
@@ -198,7 +201,7 @@ class GerenciadorDeMemoria:
         #Removendo das tabelas
         self.tabelasPaginas.pop(pid)
         print(f"Tabela de paginas do processo {pid} removida")
-        self.TabelaPagProcesso.pop(pid)
+        self.TabelaPagProcesso.lista_entradas.pop(pid)
         print(f"Processo {pid} removido da tabela de paginas por processo")
         
         #Definindo novo processo executando

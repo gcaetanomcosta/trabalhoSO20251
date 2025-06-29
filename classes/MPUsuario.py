@@ -115,22 +115,27 @@ class MPUsuario:
 
 
     def desalocarPagina(self, end, tabelasPaginas):
-        quadroComPagSaindo = self.quadrosMP[end]
+        if end not in self.quadrosMP:
+            print(f"[WARN] Endereço real {end} não encontrado na MP. Ignorando desalocação.")
+            return
+        
+        idPaginaSaindo = self.quadrosMP[end].getConteudoQuadro().getIdPagina()
+        idProcesoSaindo = self.quadrosMP[end].getConteudoQuadro().getIdProcesso()
         #encontrando a tabela de pagina do quadro LRU
-        tabelaPaginaSaindo = tabelasPaginas[quadroComPagSaindo.getConteudoQuadro().getIdProcesso()]
+        tabelaPaginaSaindo = tabelasPaginas[idProcesoSaindo]
         #verifica se a pagina foi modificada
-        if tabelaPaginaSaindo.verificarM(quadroComPagSaindo.getConteudoQuadro().getIdPagina()):
+        if tabelaPaginaSaindo.verificarM(idPaginaSaindo):
             #atualiazando valores na MS
             #MS.atualizarPagina(self.quadrosMP[self.ultimosQuadrosReferenciados[i]].getConteudoQuadro())
-            print(f"Pagina {quadroComPagSaindo.getConteudoQuadro().getIdPagina()} do processo {quadroComPagSaindo.getConteudoQuadro().getIdProcesso()} atualizado na Memória Secundária ")
+            print(f"Pagina {idPaginaSaindo} do processo {idProcesoSaindo} atualizado na Memória Secundária ")
             self.quadrosMP[end].limpar()
             #atualizando UQR
-            self.removerUQR(quadroComPagSaindo.getEnd())
+            self.removerUQR(end)
         #caso nao tenha sido modificada
         else:
             self.quadrosMP[self.ultimosQuadrosReferenciados[0]].limpar()
             #atualizando UQR
-            self.removerUQR(quadroComPagSaindo.getEnd())
+            self.removerUQR(end)
 
     def printarMPUsuario(self):
         print("Memória Principal dos processos do usuário:", end="\n\n")
