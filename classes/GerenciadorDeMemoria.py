@@ -284,7 +284,7 @@ class GerenciadorDeMemoria:
                 #atualizando TLB se a pagina removida estiver na TLB
                 if paginaRemovida[0] == self.processoExecutando:
                     if self.TLB.verificarPresencaPag(paginaRemovida[1]):
-                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
+                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, None)
 
             #atualizando a tabela de pagina do processo para incluir a presença da pagina nova alocada em MP
             self.tabelasPaginas[pid].atualizarEntrada(endLogico//transformarEmBytes(self.configuracoesSistema["tamPag"]), endQuadroAlocado, 1, 0)
@@ -336,7 +336,7 @@ class GerenciadorDeMemoria:
                 #atualizando TLB se a pagina removida estiver na TLB
                 if paginaRemovida[0] == self.processoExecutando:
                     if self.TLB.verificarPresencaPag(paginaRemovida[1]):
-                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
+                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, None)
 
 
             #atualizando a tabela de pagina do processo para incluir a presença da pagina nova alocada em MP
@@ -386,7 +386,7 @@ class GerenciadorDeMemoria:
                 #atualizando TLB se a pagina removida estiver na TLB
                 if paginaRemovida[0] == self.processoExecutando:
                     if self.TLB.verificarPresencaPag(paginaRemovida[1]):
-                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, 0)
+                        self.TLB.atualizarPagTLB(1, paginaRemovida[1], 0, 0, None)
 
 
             #atualizando a tabela de pagina do processo para incluir a presença da pagina nova alocada em MP

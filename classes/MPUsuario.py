@@ -37,6 +37,8 @@ class MPUsuario:
 
     def swapOutLRU(self, paginaNova, tabelasPaginas):
         quadroLRU = self.quadrosMP[self.ultimosQuadrosReferenciados[0]]
+        IDProcessoRemovido = self.quadrosMP[self.ultimosQuadrosReferenciados[0]].getConteudoQuadro().getIdProcesso()
+        IDPaginaRemovida = self.quadrosMP[self.ultimosQuadrosReferenciados[0]].getConteudoQuadro().getIdPagina()
         #encontrando a tabela de pagina do quadro LRU
         tabelaPaginaLRU = tabelasPaginas[quadroLRU.getConteudoQuadro().getIdProcesso()]
         #verifica se a pagina foi modificada
@@ -49,7 +51,7 @@ class MPUsuario:
             self.adicionarUQR(quadroLRU.getEnd())
             #retornando o id do processo e da pagina que foi removida para atualizar a tabela de paginas no gerenciador de memoria
             #retornando também o endereço do quadro alocado para atualizar na tabela de paginas no gerenciador de memoria
-            return [quadroLRU.getConteudoQuadro().getIdProcesso(), quadroLRU.getConteudoQuadro().getIdPagina()], quadroLRU.getEnd()
+            return [IDProcessoRemovido, IDPaginaRemovida], quadroLRU.getEnd()
         
         #caso nao tenha sido modificada
         else:
@@ -58,8 +60,8 @@ class MPUsuario:
             self.adicionarUQR(quadroLRU.getEnd())
             #retornando o id do processo e da pagina que foi removida para atualizar a tabela de paginas no gerenciador de memoria
             #retornando também o endereço do quadro alocado para atualizar na tabela de paginas no gerenciador de memoria
-            return [quadroLRU.getConteudoQuadro().getIdProcesso(), quadroLRU.getConteudoQuadro().getIdPagina()], quadroLRU.getEnd()
-
+            return [IDProcessoRemovido, IDPaginaRemovida], quadroLRU.getEnd()
+        
     def setBitU(self, endReal):
         self.bit_uso[endReal] = 1
 

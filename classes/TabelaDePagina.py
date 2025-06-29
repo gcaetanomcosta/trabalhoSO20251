@@ -8,11 +8,10 @@ class TabelaDePagina:
             self.listaEntradasTP[i] = EntradaTP(bitP=0, bitM=0, endQuadroMP=None)
     
 
-    def atualizarEntrada(self, idPagina, end, bitP, bitM):
-        entrada = self.listaEntradasTP[idPagina]
-        entrada.endQuadroMP = end
-        entrada.bitP = bitP
-        entrada.bitM = bitM
+    def atualizarEntrada(self, idPagina, end, bitP, bitM):        
+        self.listaEntradasTP[idPagina].endQuadroMP = end
+        self.listaEntradasTP[idPagina].bitP = bitP
+        self.listaEntradasTP[idPagina].bitM = bitM
 
     def verificarM(self, idPagina):
         return self.listaEntradasTP[idPagina].getBitM()
