@@ -8,7 +8,7 @@ Entre as funcionalidades implementadas estão:
 
 - Controle da memória principal e secundária.
 - Uso de tabela de páginas para cada processo, com bits de presença (P), modificação (M) e endereço real do quadro.
-- Uso de uma TLB (Translation Lookaside Buffer) para acelerar a tradução de endereços.
+- Uso de uma TLB.
 - Políticas de substituição de páginas quando a memória principal está cheia.
 
 ## Funcionalidades
@@ -22,22 +22,54 @@ Entre as funcionalidades implementadas estão:
 
 ## Políticas de substituição de páginas
 
-O sistema implementa duas políticas possíveis:
-
-- **Relógio (Clock)**: percorre os quadros em ordem. O critério é:
-
-  - Primeiro procura páginas com **U = 0 e M = 0** (não usadas e não modificadas).
-  - Se não encontrar, zera U das páginas com U = 1 e continua o ciclo.
-  - Se a página a ser substituída tiver M = 1, ela é salva na memória secundária antes da substituição.
-
-- **LRU (Least Recently Used)**: substitui a página que não é usada há mais tempo.  
-  _(Implementação opcional no projeto)_
+O sistema implementa duas políticas possíveis: Relógio e LRU.
 
 ## O que o simulador demonstra
 
 - Alocação e liberação de quadros.
 - TLB hit e miss.
 - Faltas de página e carregamento de página da MS.
-- Substituição de página usando Relógio (com U e M).
+- Substituição de página usando Relógio.
+- Substituição de página usando LRU.
 - Estado dos processos e movimentação entre filas.
 - Salvamento de páginas modificadas na MS.
+
+## O que é impresso na tela após cada instrução:
+
+- Atual processo executando.
+- TLB.
+- Tabela contendo o id do Processo e o seu número de páginas.
+- Tabela de página de cada processo.
+- Estado de cada processo.
+- Filas de processos pronto e bloqueado.
+- Memória principal.
+- Memória secundária.
+- Instrução seguinte a ser executada.
+
+## Decisões de projeto
+
+- Um processo só vai para o estado bloqueado após um I/O.
+- Desconsideramos o tempo de alocação da memória secundária para a memória principal devido a uma falta de página como motivo para bloquear um processo.
+
+
+## Como usar 
+
+- Ir até o diretorio do projeto.
+- Executar no terminal: python main.py
+- Escolher a configuração do sistema.
+- Escolher a política de substituição.
+- Escolher o arquivo de entrada desejado.
+- Acompanhar a execução das instruções apertando enter.
+
+Obs: caso deseje incluir mais um arquivo, insira ele na pasta "componentes\entradas".
+
+## Sugestão de configurações
+
+- Escolher entrada1 e configuração 2. 
+- Escolher entrada2 e configUração 2.
+- Escolher entrada3 e configuração 4.
+- Escolher entrada4 e configuração 3.
+
+A configuração 1 não é boa para perceber todos os aspectos do simulador, mas pode ser executada com qualquer entrada, por ter um tamanho de página e MP muito grande para as entradas.
+
+A entrada_errada serve para mostrar que o simulador não aceita instruções sem a devida formatação.

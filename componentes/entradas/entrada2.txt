@@ -1,12 +1,12 @@
 
 # CONFIGURAÇÃO RECOMENDADA : 
 
-#    "tamMPUsuario": "16MB",        # 4 quadros (com 4MB/página)
+#    "tamMP": "16MB",        # 4 quadros (com 4MB/página)
 #    "tamPag": "4MB",               # Página de 4MB
 #    "tamEndL": "32bits",           # Capacidade de usar endereços grandes
 #    "nLinhasTLB": "4",             # TLB pequena (para forçar substituição)
 #    "tamMS": "256MB",              # MS grande o suficiente
-#    "politicaSubstituicao": "Relógio"  # Para testar bit de uso (bit u)
+#    "politicaSubstituicao": "Relógio/LRU"
 
 # Criação dos processos
 # P1: 5 páginas

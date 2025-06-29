@@ -1,4 +1,4 @@
-from classes.GerenciadorDeMemoria import GerenciadorDeMemoria
+from componentes.GerenciadorDeMemoria import GerenciadorDeMemoria
 import sys
 
 def main():

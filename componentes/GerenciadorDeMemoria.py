@@ -26,17 +26,24 @@ class GerenciadorDeMemoria:
                 "tamMS": "256GB"
             },
             "2": {
-                "tamMPUsuario": "128MB",
-                "tamPag": "4MB",
-                "tamEndL": "32bits",
-                "nLinhasTLB": "8",
-                "tamMS": "256GB"
-            },
-            "3": {
                 "tamMPUsuario": "16MB",
                 "tamPag": "4MB",
                 "tamEndL": "32bits",
                 "nLinhasTLB": "4",
+                "tamMS": "256GB"
+            },
+            "3": {
+                "tamMPUsuario": "16MB",
+                "tamPag": "2MB",
+                "tamEndL": "32bits",
+                "nLinhasTLB": "2",
+                "tamMS": "256MB"
+            },
+            "4": {
+                "tamMPUsuario": "64KB",
+                "tamPag": "16KB",
+                "tamEndL": "16bits",
+                "nLinhasTLB": "2",
                 "tamMS": "256MB"
             },
         }
@@ -445,7 +452,8 @@ class GerenciadorDeMemoria:
             sys.exit(1)
 
     def operarInterface(self):
-        caminho = "classes/entradas/entrada_errada.txt"
+        # entrada = input("Digite a entrada
+        caminho = "componentes/entradas/entrada6.txt"
         self.printarConfiguracoes()
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:

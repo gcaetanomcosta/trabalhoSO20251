@@ -1,0 +1,46 @@
+# CONFIGURAÇÃO RECOMENDADA : 
+#    "tamMP": "64KB",         
+#    "tamPag": "16KB",        
+#    "tamEndL": "16bits",     
+#    "nLinhasTLB": "2",       
+#    "tamMS": "256KB",        
+#    "politicaSubstituicao": "Relógio/LRU"
+
+# P1 -> 3 páginas (48 KB)
+P1 C 48 KB   
+
+# P2 -> 2 páginas (32 KB)
+P2 C 32 KB   
+
+P1 P (0)10        
+P1 R (0)10        
+
+# Página 1
+P1 P (16384)10    
+
+P1 W (16384)10    
+
+# Página 0 (nova)
+P2 P (0)10        
+P2 W (4096)10     
+
+# Página 2 (usa 3º quadro)
+P1 P (32768)10    
+
+# P1 interrompe
+P1 I (6)10        
+
+# Página 1 — falta, força alocação
+P2 R (16384)10    
+
+# Página 2 — falta, substituição acontece aqui
+P2 P (32768)10    
+
+# P2 interrompe
+P2 I (4)10        
+
+# Página 0 volta — testa LRU/Relógio
+P1 R (0)10        
+
+P1 T              
+P2 T              

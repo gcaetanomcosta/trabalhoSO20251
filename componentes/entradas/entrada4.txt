@@ -1,0 +1,50 @@
+# CONFIGURAÇÃO RECOMENDADA : 
+
+#    "tamMP": "16MB",        # 4 quadros (com 4MB/página)
+#    "tamPag": "2MB",               # Página de 4MB
+#    "tamEndL": "32bits",           # Capacidade de usar endereços grandes
+#    "nLinhasTLB": "2",             # TLB pequena (para forçar substituição)
+#    "tamMS": "256MB",              # MS grande o suficiente
+#    "politicaSubstituicao": "Relógio/LRU"
+
+
+
+##### início do arquivo ######
+
+P1 C 100 MB
+
+P1 P (0)10
+
+P1 R (0)10
+
+P1 R (16777217)10
+
+P1 P (33554432)10
+
+P1 R (50331651)10
+
+P1 P (2)10
+
+P1 W (1024)10
+
+P7 C 200 MB
+
+P7 R (4095)10
+
+P7 R (800)10
+
+P7 I (2)10
+
+P7 R (801)10
+
+P7 W (4096)10
+
+P1 R (3)10
+
+P1 R (4)10
+
+P1 W (1025)10
+
+P1 W (1026)10
+
+##### final do arquivo ######

@@ -1,4 +1,13 @@
-# CONFIG: MP = 16MB / Páginas = 4MB / TLB = 4 / MS = 256MB / Substituição: Relógio
+
+# CONFIGURAÇÃO RECOMENDADA : 
+
+#    "tamMP": "16MB",        # 4 quadros (com 4MB/página)
+#    "tamPag": "4MB",               # Página de 4MB
+#    "tamEndL": "32bits",           # Capacidade de usar endereços grandes
+#    "nLinhasTLB": "4",             # TLB pequena (para forçar substituição)
+#    "tamMS": "256MB",              # MS grande o suficiente
+#    "politicaSubstituicao": "Relógio/LRU"
+
 
 # P1 cria processo de 12 MB - 3 páginas
 P1 C 12 MB  
@@ -18,7 +27,7 @@ P1 P (4194304)10
 # P1 escreve na página 1 - seta bit M=1
 P1 W (4194304)10  
 
-# P1 lê página 1 novamente - força U=1
+# P1 lê página 1 novamente
 P1 R (4194304)10  
 
 # P2 acessa página 0 - alocação
@@ -27,7 +36,7 @@ P2 P (0)10
 # P2 escreve na página 0 - seta bit M=1
 P2 W (8192)10  
 
-# P2 lê página 0 novamente - força U=1
+# P2 lê página 0 novamente
 P2 R (8192)10  
 
 # P1 acessa página 2 - alocação - MPU cheia após isso
