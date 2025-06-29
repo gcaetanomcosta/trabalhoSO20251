@@ -51,8 +51,7 @@ O sistema implementa duas políticas possíveis: Relógio e LRU.
 - Um processo só vai para o estado bloqueado após um I/O.
 - Desconsideramos o tempo de alocação da memória secundária para a memória principal devido a uma falta de página como motivo para bloquear um processo.
 
-
-## Como usar 
+## Como usar
 
 - Ir até o diretorio do projeto.
 - Executar no terminal: python main.py
@@ -63,12 +62,12 @@ O sistema implementa duas políticas possíveis: Relógio e LRU.
 
 Obs: caso deseje incluir mais um arquivo, insira ele na pasta "componentes\entradas".
 
-## Sugestão de configurações
+## Sugestão de teste
 
-- Escolher entrada1 e configuração 2. 
-- Escolher entrada2 e configUração 2.
-- Escolher entrada3 e configuração 4.
-- Escolher entrada4 e configuração 3.
+- Escolher configuração 2 e entrada1.
+- Escolher configuração 2 e entrada2.
+- Escolher configuração 4 e entrada3.
+- Escolher configuração 3 e entrada4.
 
 A configuração 1 não é boa para perceber todos os aspectos do simulador, mas pode ser executada com qualquer entrada, por ter um tamanho de página e MP muito grande para as entradas.
 

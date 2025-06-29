@@ -1,4 +1,5 @@
 import math
+import os
 import sys
 from .EntradaTPP import EntradaTPP
 from .ListaDeInstrucoes import ListaDeInstrucoes
@@ -37,7 +38,7 @@ class GerenciadorDeMemoria:
                 "tamPag": "2MB",
                 "tamEndL": "32bits",
                 "nLinhasTLB": "2",
-                "tamMS": "256MB"
+                "tamMS": "512MB"
             },
             "4": {
                 "tamMPUsuario": "64KB",
@@ -450,10 +451,33 @@ class GerenciadorDeMemoria:
         except FileNotFoundError as e:
             print(f"Erro ao carregar o arquivo: {e}")
             sys.exit(1)
+    def escolher_entrada(self):
+        pasta = "componentes/entradas"
+        arquivos = [f for f in os.listdir(pasta) if os.path.isfile(os.path.join(pasta, f))]
+
+        if not arquivos:
+            print("Nenhum arquivo de entrada encontrado na pasta.")
+            return None
+
+        print("Escolha um arquivo de entrada:")
+        for i, arquivo in enumerate(arquivos):
+            print(f"{i + 1} - {arquivo}")
+
+        while True:
+            try:
+                escolha = int(input("Digite o número do arquivo escolhido: "))
+                if 1 <= escolha <= len(arquivos):
+                    caminho = os.path.join(pasta, arquivos[escolha - 1])
+                    print(f"Arquivo selecionado: {caminho}")
+                    return caminho
+                else:
+                    print("Número inválido. Tente novamente.")
+            except ValueError:
+                print("Entrada inválida. Digite um número.")
 
     def operarInterface(self):
         # entrada = input("Digite a entrada
-        caminho = "componentes/entradas/entrada6.txt"
+        caminho = self.escolher_entrada()
         self.printarConfiguracoes()
         lista_instrucoes = self.carregar_instrucoes(caminho)
         for instrucao in lista_instrucoes:

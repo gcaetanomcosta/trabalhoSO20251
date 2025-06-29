@@ -1,10 +1,10 @@
 # CONFIGURAÇÃO RECOMENDADA : 
 
-#    "tamMP": "16MB",        # 4 quadros (com 4MB/página)
-#    "tamPag": "2MB",               # Página de 4MB
+#    "tamMP": "16MB",        # 8 quadros (com 2MB/página)
+#    "tamPag": "2MB",               # Página de 2MB
 #    "tamEndL": "32bits",           # Capacidade de usar endereços grandes
 #    "nLinhasTLB": "2",             # TLB pequena (para forçar substituição)
-#    "tamMS": "256MB",              # MS grande o suficiente
+#    "tamMS": "512MB",              # MS grande o suficiente
 #    "politicaSubstituicao": "Relógio/LRU"
 
 

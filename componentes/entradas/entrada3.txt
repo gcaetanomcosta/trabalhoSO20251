@@ -10,7 +10,7 @@
 P1 C 48 KB   
 
 # P2 -> 2 páginas (32 KB)
-P2 C 32 KB   
+P2 C 64 KB   
 
 P1 P (0)10        
 P1 R (0)10        
