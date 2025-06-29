@@ -200,6 +200,8 @@ class GerenciadorDeMemoria:
 
         #Definindo novo processo executando
         if self.processoExecutando == pid:
+            self.TLB.reiniciarTLB()
+            print(f"TLB reiniciada")
             if self.filaPronto!= []:
                 self.processoExecutando = self.filaPronto[0]
                 self.filaPronto.pop(0)
