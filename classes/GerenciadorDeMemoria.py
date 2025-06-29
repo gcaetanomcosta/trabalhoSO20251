@@ -208,7 +208,7 @@ class GerenciadorDeMemoria:
             else:
                 self.processoExecutando = None
 
-    def ler(self, pid, endLogico):
+    def ler(self, pid, endLogico, paginaAdicionada=False):
         tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
@@ -227,12 +227,13 @@ class GerenciadorDeMemoria:
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
-            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
-                print("TLB miss, verificando a Tabela de Página")
-                #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
-            else:
-                print("TLB hit")
+            if not paginaAdicionada:
+                if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                    print("TLB miss, verificando a Tabela de Página")
+                    #adicionando página na TLB
+                    self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
+                else:
+                    print("TLB hit")
             self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Conteudo do endereço lógico {endLogico} do processo {pid} no endereço real {endReal} lido com sucesso!")
@@ -263,10 +264,10 @@ class GerenciadorDeMemoria:
             #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
             #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
-            self.ler(pid, endLogico)
+            self.ler(pid, endLogico, paginaAdicionada=True)
 
 
-    def escrever(self, pid, endLogico):
+    def escrever(self, pid, endLogico, paginaAdicionada=False):
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
             if self.processoExecutando is not None:
@@ -286,15 +287,17 @@ class GerenciadorDeMemoria:
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
             #verificar se página está na TLB
-            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
-                print("TLB miss, verificando a Tabela de Página")
-                #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
-            else:
-                print("TLB hit")
+            if not paginaAdicionada:
+                if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                    print("TLB miss, verificando a Tabela de Página")
+                    #adicionando página na TLB
+                    self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
+                else:
+                    print("TLB hit")
             self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             self.tabelasPaginas[pid].setBitM(endLogico//tamPag, 1)
+            self.TLB.n_linhas[endLogico//tamPag].setBitM(1)
             print(f"Operação de escrita no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} finalizado com sucesso!")
         #pagina não está na memória
         else:
@@ -323,9 +326,9 @@ class GerenciadorDeMemoria:
             #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
             #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
-            self.escrever(pid, endLogico)
+            self.escrever(pid, endLogico, paginaAdicionada=True)
 
-    def instrucaoCPU(self, pid, endLogico):
+    def instrucaoCPU(self, pid, endLogico, paginaAdicionada = False):
         #atualizando estado executando e pronto
         if self.processoExecutando != pid:
             if self.processoExecutando is not None:
@@ -345,13 +348,14 @@ class GerenciadorDeMemoria:
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
-            #verificar se página está na TLB
-            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
-                print("TLB miss, verificando a Tabela de Página")
-                #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
-            else:
-                print("TLB hit")
+            if not paginaAdicionada:
+                #verificar se página está na TLB
+                if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                    print("TLB miss, verificando a Tabela de Página")
+                    #adicionando página na TLB
+                    self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
+                else:
+                    print("TLB hit")
             self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Instrução localizada no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} realizada com sucesso!")
@@ -379,7 +383,7 @@ class GerenciadorDeMemoria:
             #for i, entrada in enumerate(self.tabelasPaginas[pid].listaEntradasTP):
             #    print(f"  Página {i:02d} -> P: {entrada.bitP}, M: {entrada.bitM}, Quadro: {entrada.endQuadroMP}")
             print(f"Tabela de paginas do processo {pid} atualizada")
-            self.instrucaoCPU(pid, endLogico)
+            self.instrucaoCPU(pid, endLogico, paginaAdicionada=True)
 
     def realizarInstrucao(self, instrucao):
         tipo = instrucao.tipo
