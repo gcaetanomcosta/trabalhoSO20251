@@ -133,7 +133,7 @@ class MPUsuario:
             self.removerUQR(end)
         #caso nao tenha sido modificada
         else:
-            self.quadrosMP[self.ultimosQuadrosReferenciados[0]].limpar()
+            self.quadrosMP[end].limpar()
             #atualizando UQR
             self.removerUQR(end)
 

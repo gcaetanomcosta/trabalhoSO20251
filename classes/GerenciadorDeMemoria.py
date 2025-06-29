@@ -191,8 +191,8 @@ class GerenciadorDeMemoria:
                 enderecosComPagDoProcesso.append(entrada.getEndQuadroMP())
             
         print(f"Endereços com páginas do processo {pid} a serem desalocados: {enderecosComPagDoProcesso}")   
-        #desalocando cada pagina do processo
-        for end in enderecosComPagDoProcesso:
+        #desalocando cada pagina do processo  
+        for end in enderecosComPagDoProcesso:  
             self.MPUsuario.desalocarPagina(end, self.tabelasPaginas)
         #limpando TLB
         if self.processoExecutando == pid:
