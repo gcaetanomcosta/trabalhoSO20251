@@ -227,15 +227,21 @@ class GerenciadorDeMemoria:
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                print("TLB miss, verificando a Tabela de Página")
+                #adicionando página na TLB
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
+            else:
+                print("TLB hit")
             self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Conteudo do endereço lógico {endLogico} do processo {pid} no endereço real {endReal} lido com sucesso!")
             #verificar se página está na TLB
-            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
-                #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                print("TLB miss, verificando a Tabela de Página")
+                #adicionando página na TLB
             tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
             print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
             # Se alguma pagina foi removida da MP para adicionar essa, precisa atualizar na respectiva tabela de pagina    
@@ -279,16 +285,22 @@ class GerenciadorDeMemoria:
         tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
+            #verificar se página está na TLB
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                print("TLB miss, verificando a Tabela de Página")
+                #adicionando página na TLB
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
+            else:
+                print("TLB hit")
             self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             self.tabelasPaginas[pid].setBitM(endLogico//tamPag, 1)
             print(f"Operação de escrita no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} finalizado com sucesso!")
-            #verificar se página está na TLB
-            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
-                #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                print("TLB miss, verificando a Tabela de Página")
+                #adicionando página na TLB
             print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
             # Se alguma pagina foi removida da MP para adicionar essa, precisa atualizar na respectiva tabela de pagina    
             paginaRemovida, endQuadroAlocado = self.MPUsuario.alocarPagina(self.MS.obterPaginaProcesso(pid, endLogico//tamPag), self.tabelasPaginas)
@@ -333,15 +345,21 @@ class GerenciadorDeMemoria:
         #pagina está na memória
         endReal = self.mapearEndReal(pid, endLogico) 
         if endReal != None:
+            #verificar se página está na TLB
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                print("TLB miss, verificando a Tabela de Página")
+                #adicionando página na TLB
+                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
+            else:
+                print("TLB hit")
             self.MPUsuario.setBitU(endReal)
             self.MPUsuario.adicionarUQR(endReal)
             print(f"Instrução localizada no endereço lógico {endLogico} do processo {pid} no endereço real {endReal} realizada com sucesso!")
-            #verificar se página está na TLB
-            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
-                #adicionando página na TLB
-                self.TLB.adicionarPagTLB(1, endLogico//tamPag, 1, self.tabelasPaginas[pid].listaEntradasTP[endLogico//tamPag].getBitM(), endReal)
         #pagina não está na memória
         else:
+            if not self.TLB.verificarPresencaPag(endLogico//tamPag):
+                print("TLB miss, verificando a Tabela de Página")
+                #adicionando página na TLB
             tamPag = transformarEmBytes(self.configuracoesSistema["tamPag"])
             print(f"Falta de página! Iniciando procedimento de alocação da página {endLogico//tamPag} do processo {pid}")
             # Se alguma pagina foi removida da MP para adicionar essa, precisa atualizar na respectiva tabela de pagina    
